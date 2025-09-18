@@ -1,0 +1,8 @@
+trade_rate_5s_target:
+  global: 0.70
+flash_effectiveness_target:
+  global: 0.30
+utility_dmg_per_round_target:
+  global: 20
+postplant_early_deaths_max:
+  global: 0.30

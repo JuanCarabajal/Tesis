@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="bg-white rounded-2xl shadow p-6">
+  <h2 class="text-lg font-semibold mb-2">Demos locales</h2>
+  <p class="text-sm text-slate-500 mb-4">Poné tus <code>.dem</code> en la carpeta <code>demos/</code>.</p>
+  <form method="POST" class="flex gap-3 items-center">
+    <select name="demo_name" class="border rounded-lg px-3 py-2 text-sm min-w-[280px]" required>
+      {% for d in demos %}
+        <option value="{{ d }}">{{ d }}</option>
+      {% endfor %}
+    </select>
+    <button class="bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg px-4 py-2">Procesar</button>
+  </form>
+  {% if not demos %}
+  <div class="mt-4 text-sm text-slate-500">No hay demos. Copiá alguna a <code>demos/</code>.</div>
+  {% endif %}
+</div>
+{% endblock %}

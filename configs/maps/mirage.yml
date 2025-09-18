@@ -1,0 +1,65 @@
+name: mirage
+z_layers:
+  - name: ground
+    z_min: -9999
+    z_max:  9999
+
+zones:
+  - id: "A Ramp"
+    layer: "ground"
+    polygon: [[-1700,600],[-1300,600],[-1300,1100],[-1700,1100]]
+  - id: "Palace"
+    layer: "ground"
+    polygon: [[-1300,900],[-900,900],[-900,1300],[-1300,1300]]
+  - id: "A Site"
+    layer: "ground"
+    polygon: [[-1000,300],[-200,300],[-200,900],[-1000,900]]
+  - id: "Stairs"
+    layer: "ground"
+    polygon: [[-500,900],[-200,900],[-200,1200],[-500,1200]]
+  - id: "Jungle"
+    layer: "ground"
+    polygon: [[-300,600],[100,600],[100,900],[-300,900]]
+  - id: "Ticket"
+    layer: "ground"
+    polygon: [[-300,300],[100,300],[100,600],[-300,600]]
+  - id: "Conector"
+    layer: "ground"
+    polygon: [[-900,500],[-600,500],[-600,800],[-900,800]]
+  - id: "Mid"
+    layer: "ground"
+    polygon: [[-1400,0],[-600,0],[-600,500],[-1400,500]]
+  - id: "Window"
+    layer: "ground"
+    polygon: [[-900,-100],[-600,-100],[-600,100],[-900,100]]
+  - id: "Catwalk"
+    layer: "ground"
+    polygon: [[-600,-100],[-300,-100],[-300,200],[-600,200]]
+  - id: "Short"
+    layer: "ground"
+    polygon: [[-300,200],[0,200],[0,600],[-300,600]]
+  - id: "B Apps"
+    layer: "ground"
+    polygon: [[-300,600],[300,600],[300,1100],[-300,1100]]
+  - id: "B Site"
+    layer: "ground"
+    polygon: [[0,800],[600,800],[600,1200],[0,1200]]
+  - id: "Market"
+    layer: "ground"
+    polygon: [[600,700],[900,700],[900,1100],[600,1100]]
+  - id: "Under"
+    layer: "ground"
+    polygon: [[-1100,200],[-900,200],[-900,400],[-1100,400]]
+
+plant_sites:
+  - id: "A"
+    center: [-600, 650]
+    radius: 280
+  - id: "B"
+    center: [ 300, 950]
+    radius: 260
+
+aliases:
+  Mid: ["Middle", "Mid"]
+  "A Site": ["A", "Site A"]
+  "B Site": ["B", "Site B"]

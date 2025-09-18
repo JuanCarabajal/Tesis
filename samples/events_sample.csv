@@ -1,0 +1,8 @@
+match_id,round,ts,event,team_killer,team_victim,side_killer,side_victim,killer,victim,assister,is_flash_assist,flashed_enemies,nade_damage,x,y,z,map_name
+m1,1,12.1,kill,TeamA,TeamB,T,CT,pl1,plX,,False,0,0,-800,700,0,mirage
+m1,1,14.6,kill,TeamB,TeamA,CT,T,plY,pl1,,False,0,0,-780,720,0,mirage
+m1,2,20.0,flash,TeamA,TeamB,T,CT,pl2,,pl3,True,2,0,-600,650,0,mirage
+m1,2,21.2,kill,TeamA,TeamB,T,CT,pl4,plZ,pl3,True,0,0,-590,660,0,mirage
+m1,5,35.0,kill,TeamA,TeamB,T,CT,pl1,plY,,False,0,0,-300,950,0,mirage
+m1,5,36.8,kill,TeamB,TeamA,CT,T,plZ,pl1,,False,0,0,-290,960,0,mirage
+m1,7,48.0,kill,TeamB,TeamA,CT,T,plY,pl2,,False,0,10,-620,620,0,mirage

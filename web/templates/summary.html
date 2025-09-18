@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="grid md:grid-cols-3 gap-4">
+  <!-- KPI: Entry & Trades -->
+  <div class="bg-white rounded-2xl shadow p-6">
+    <h3 class="font-semibold mb-4">Entry & Trades</h3>
+    <canvas id="chartTrades" width="220" height="220"></canvas>
+    <p class="text-sm mt-3 text-slate-500">Objetivo ≥ 70% trades ≤ 5s</p>
+  </div>
+
+  <!-- KPI: Utilidad -->
+  <div class="bg-white rounded-2xl shadow p-6">
+    <h3 class="font-semibold mb-4">Utilidad</h3>
+    <canvas id="chartUtility" width="220" height="220"></canvas>
+    <p class="text-sm mt-3 text-slate-500">Objetivo ≈ 20 de daño por ronda</p>
+  </div>
+
+  <!-- KPI: Post-plant -->
+  <div class="bg-white rounded-2xl shadow p-6">
+    <h3 class="font-semibold mb-4">Post-plant</h3>
+    <canvas id="chartPostplant" width="220" height="220"></canvas>
+    <p class="text-sm mt-3 text-slate-500">Objetivo: pocas muertes tempranas</p>
+  </div>
+</div>
+
+<!-- Quick Wins -->
+<div class="mt-6 bg-white rounded-2xl shadow p-6">
+  <h2 class="text-lg font-semibold mb-3">Quick Wins</h2>
+  <ul class="grid md:grid-cols-3 gap-3">
+    {% for q in fb.summary.quick_wins %}
+    <li class="border rounded-xl p-4">
+      <div class="font-medium">{{ q.title }}</div>
+      <div class="text-xs text-slate-500 mt-1">Impacto: {{ (q.impact*100)|round(0) }}% · Esfuerzo: {{ q.effort }}</div>
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+
+<!-- Hallazgos -->
+<div class="mt-6 bg-white rounded-2xl shadow p-6">
+  <h2 class="text-lg font-semibold mb-4">Hallazgos</h2>
+  <div class="space-y-3">
+    {% for f in fb.findings %}
+    <details class="border rounded-xl p-4">
+      <summary class="cursor-pointer font-medium">
+        {{ f.title }} <span class="text-xs text-slate-500">— {{ f.severity }}</span>
+      </summary>
+      <div class="mt-3 text-sm text-slate-700">
+        <p class="mb-2">{{ f.why_it_matters }}</p>
+        {% if f.metric_before %}
+        <p class="mb-1">
+          <span class="font-medium">Métrica:</span>
+          {% for k,v in f.metric_before.items() %} {{ k }}={{ v }} {% endfor %}
+          {% if f.target %}
+            <span class="text-slate-500">→ objetivo:</span>
+            {% for k,v in f.target.items() %} {{ k }}={{ v }} {% endfor %}
+          {% endif %}
+        </p>
+        {% endif %}
+        {% if f.evidence.rounds %}
+        <p class="mb-1"><span class="font-medium">Rondas:</span> {{ f.evidence.rounds|join(', ') }}</p>
+        {% endif %}
+        <p class="mt-2"><span class="font-medium">Recomendación:</span> {{ f.recommendation }}</p>
+      </div>
+    </details>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Datos como JSON embebido (evita conflictos de variables JS) -->
+<script id="fb-data" type="application/json">
+  {{ fb | tojson }}
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const data = JSON.parse(document.getElementById('fb-data').textContent);
+
+  const safeNum = v => {
+    const n = Number(v);
+    return Number.isFinite(n) ? n : 0;
+  };
+
+  const scoreTrades  = safeNum(data?.summary?.scores?.entry_trades);
+  const scoreUtility = safeNum(data?.summary?.scores?.utility);
+  const scorePost    = safeNum(data?.summary?.scores?.postplant);
+
+  function donut(id, value){
+    const el = document.getElementById(id);
+    if (!el) return;
+    const ctx = el.getContext('2d');
+    new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Score','Pendiente'],
+        datasets: [{ data: [value, Math.max(0, 100 - value)], borderWidth: 0 }]
+      },
+      options: { cutout: '70%', plugins: { legend: { display:false }, tooltip:{ enabled:false } } }
+    });
+  }
+
+  donut('chartTrades',  scoreTrades);
+  donut('chartUtility', scoreUtility);
+  donut('chartPostplant', scorePost);
+});
+</script>
+{% endblock %}

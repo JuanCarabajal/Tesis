@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="bg-white rounded-2xl shadow p-6">
+  <div class="flex items-center justify-between mb-4">
+    <h2 class="text-lg font-semibold">Notas por ronda</h2>
+    <input id="search" type="text" placeholder="Buscar..." class="border rounded-lg px-3 py-2 text-sm w-64">
+  </div>
+  <div class="overflow-x-auto">
+    <table class="min-w-full text-sm">
+      <thead>
+        <tr class="text-left text-slate-500">
+          <th class="py-2 pr-4">Ronda</th>
+          <th class="py-2">Nota</th>
+        </tr>
+      </thead>
+      <tbody id="rows">
+        {% for r in notes %}
+        <tr class="border-t">
+          <td class="py-2 pr-4 font-medium">{{ r.round }}</td>
+          <td class="py-2">{{ r.note }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  const q = document.getElementById('search');
+  const rows = [...document.querySelectorAll('#rows tr')];
+  q.addEventListener('input', () => {
+    const v = q.value.toLowerCase();
+    rows.forEach(tr => {
+      const text = tr.innerText.toLowerCase();
+      tr.style.display = text.includes(v) ? '' : 'none';
+    });
+  });
+</script>
+{% endblock %}

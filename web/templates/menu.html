@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="mb-8">
+  <div class="bg-white rounded-2xl shadow p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+    <div>
+      <h1 class="text-2xl font-bold">¡Hola! ¿Qué querés hacer hoy?</h1>
+      <p class="text-slate-600 mt-1">Subí una demo, revisá análisis, o ajustá tu perfil. Todo desde este panel.</p>
+    </div>
+    <div class="flex gap-3">
+      <a href="{{ url_for('upload') }}" class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white">Subir demo</a>
+      {% if has_demos %}
+        <a href="{{ url_for('demos') }}" class="px-4 py-2 rounded-lg bg-slate-900 hover:bg-black text-white">Demos locales</a>
+        {% endif %}
+
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="grid md:grid-cols-3 gap-6">
+    <!-- Resumen -->
+    <a href="{{ url_for('summary', match_id='match_demo') }}" class="group block bg-white rounded-2xl shadow p-6 hover:shadow-lg transition">
+      <div class="flex items-center gap-3">
+        <div class="p-3 rounded-xl bg-indigo-50 text-indigo-600">
+          <!-- chart icon -->
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M3 3h2v18H3V3zm16 7h2v11h-2V10zM8 13h2v8H8v-8zm4-6h2v14h-2V7z"/></svg>
+        </div>
+        <div>
+          <div class="font-semibold">Resumen</div>
+          <div class="text-sm text-slate-500">Quick Wins y KPIs</div>
+        </div>
+      </div>
+      <div class="mt-4 text-sm text-slate-600">Ver el tablero con indicadores y hallazgos.</div>
+    </a>
+
+    <!-- Rondas -->
+    <a href="{{ url_for('rounds', match_id='match_demo') }}" class="group block bg-white rounded-2xl shadow p-6 hover:shadow-lg transition">
+      <div class="flex items-center gap-3">
+        <div class="p-3 rounded-xl bg-emerald-50 text-emerald-600">
+          <!-- list icon -->
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M3 5h18v2H3V5zm0 6h12v2H3v-2zm0 6h18v2H3v-2z"/></svg>
+        </div>
+        <div>
+          <div class="font-semibold">Notas por ronda</div>
+          <div class="text-sm text-slate-500">Detalles y flags</div>
+        </div>
+      </div>
+      <div class="mt-4 text-sm text-slate-600">Filtrá y revisá puntos clave por ronda.</div>
+    </a>
+
+    <!-- Subir demo -->
+    <a href="{{ url_for('upload') }}" class="group block bg-white rounded-2xl shadow p-6 hover:shadow-lg transition">
+      <div class="flex items-center gap-3">
+        <div class="p-3 rounded-xl bg-purple-50 text-purple-600">
+          <!-- upload icon -->
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M5 20h14v-2H5v2zM12 2l5 5h-3v6h-4V7H7l5-5z"/></svg>
+        </div>
+        <div>
+          <div class="font-semibold">Subir demo</div>
+          <div class="text-sm text-slate-500">.dem o CSVs</div>
+        </div>
+      </div>
+      <div class="mt-4 text-sm text-slate-600">Procesá una demo y generá feedback.</div>
+    </a>
+
+    <!-- Mis análisis (placeholder) -->
+    <a href="{{ url_for('analytics') }}" class="group block bg-white rounded-2xl shadow p-6 hover:shadow-lg transition">
+      <div class="flex items-center gap-3">
+        <div class="p-3 rounded-xl bg-amber-50 text-amber-600">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h8V3H3v10zm10 8h8V3h-8v18zM3 21h8v-6H3v6z"/></svg>
+        </div>
+        <div>
+          <div class="font-semibold">Mis análisis</div>
+          <div class="text-xs inline-block px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">Próximamente</div>
+        </div>
+      </div>
+      <div class="mt-4 text-sm text-slate-600">Historial de matches y comparativas.</div>
+    </a>
+
+    <!-- Mi perfil (placeholder) -->
+    <a href="{{ url_for('profile') }}" class="group block bg-white rounded-2xl shadow p-6 hover:shadow-lg transition">
+      <div class="flex items-center gap-3">
+        <div class="p-3 rounded-xl bg-sky-50 text-sky-600">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.9 0-7 3.1-7 7h14c0-3.9-3.1-7-7-7z"/></svg>
+        </div>
+        <div>
+          <div class="font-semibold">Mi perfil</div>
+          <div class="text-xs inline-block px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">Próximamente</div>
+        </div>
+      </div>
+      <div class="mt-4 text-sm text-slate-600">Datos de jugador y preferencias.</div>
+    </a>
+
+    <!-- Ajustes (placeholder) -->
+    <a href="{{ url_for('settings') }}" class="group block bg-white rounded-2xl shadow p-6 hover:shadow-lg transition">
+      <div class="flex items-center gap-3">
+        <div class="p-3 rounded-xl bg-rose-50 text-rose-600">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M19.14,12.94a7.2,7.2,0,0,0,.05-.94,7.2,7.2,0,0,0-.05-.94l2.11-1.65a.5.5,0,0,0,.12-.64l-2-3.46a.5.5,0,0,0-.6-.22l-2.49,1a7.28,7.28,0,0,0-1.63-.94l-.38-2.65A.5.5,0,0,0,11.76,2H8.24a.5.5,0,0,0-.5.42L7.36,5.07a7.28,7.28,0,0,0-1.63.94l-2.49-1a.5.5,0,0,0-.6.22l-2,3.46a.5.5,0,0,0,.12.64L2.86,11.06a7.2,7.2,0,0,0-.05.94,7.2,7.2,0,0,0,.05.94L.75,14.59a.5.5,0,0,0-.12.64l2,3.46a.5.5,0,0,0,.6.22l2.49-1a7.28,7.28,0,0,0,1.63.94l.38,2.65a.5.5,0,0,0,.5.42h3.52a.5.5,0,0,0,.5-.42l.38-2.65a7.28,7.28,0,0,0,1.63-.94l2.49,1a.5.5,0,0,0,.6-.22l2-3.46a.5.5,0,0,0-.12-.64ZM12,15.5A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z"/></svg>
+        </div>
+        <div>
+          <div class="font-semibold">Ajustes</div>
+          <div class="text-xs inline-block px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">Próximamente</div>
+        </div>
+      </div>
+      <div class="mt-4 text-sm text-slate-600">Umbrales, mapas y preferencias.</div>
+    </a>
+
+    <!-- Ayuda (placeholder) -->
+    <a href="{{ url_for('help_page') }}" class="group block bg-white rounded-2xl shadow p-6 hover:shadow-lg transition">
+      <div class="flex items-center gap-3">
+        <div class="p-3 rounded-xl bg-slate-100 text-slate-700">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M11 18h2v2h-2v-2zm1-16C6.48 2 2 6.03 2 11s4.48 9 10 9 10-4.03 10-9S17.52 2 12 2zm1 14h-2v-2h2v2zm1.07-7.75-.9.92C12.45 9.9 12 10.5 12 12h-2v-.5c0-1 .45-1.9 1.17-2.58l1.24-1.26a2 2 0 1 0-3.41-1.41H7a4 4 0 1 1 7.07 2.92z"/></svg>
+        </div>
+        <div>
+          <div class="font-semibold">Ayuda</div>
+          <div class="text-xs inline-block px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">Próximamente</div>
+        </div>
+      </div>
+      <div class="mt-4 text-sm text-slate-600">Guías y preguntas frecuentes.</div>
+    </a>
+  </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CS2 Feedback</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-slate-50 text-slate-800">
+  <header class="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+      <a href="{{ url_for('home') }}" class="font-bold tracking-wide">CS2 Feedback</a>
+      <nav class="space-x-4 text-sm">
+        <a class="hover:underline" href="{{ url_for('home') }}">Menú</a>
+        <a class="hover:underline" href="{{ url_for('upload') }}">Subir demo/CSVs</a>
+        <a class="hover:underline" href="{{ url_for('demos') if has_demos else url_for('upload') }}">Demos locales</a>
+        <a class="hover:underline" href="{{ url_for('summary', match_id='match_demo') }}">Resumen demo</a>
+      </nav>
+    </div>
+  </header>
+
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div class="max-w-6xl mx-auto px-4 mt-4">
+      {% for m in messages %}
+        <div class="mb-2 rounded-lg bg-amber-50 text-amber-900 border border-amber-200 px-4 py-3">{{ m }}</div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  {% endwith %}
+
+  <main class="max-w-6xl mx-auto px-4 py-8">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="text-center text-xs text-slate-500 pb-8">
+    Hecho con ♥ para la tesis
+  </footer>
+</body>
+</html>
