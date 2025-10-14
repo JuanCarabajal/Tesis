@@ -1,0 +1,14 @@
+.git
+.gitignore
+.venv
+__pycache__/
+*.py[cod]
+*.log
+*.tmp
+.DS_Store
+
+# Datos/outputs pesados locales
+out/
+uploads/
+demos/*.dem
+samples/
