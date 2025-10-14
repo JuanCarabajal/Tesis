@@ -1,0 +1,33 @@
+{% macro kpi_card(label, weight, value100, contribution, evidence, limited=False) -%}
+{# 
+  label: texto del KPI (p. ej., "Trades ≤5s")
+  weight: 0..1 (p. ej., 0.30)    -> se muestra como w 30%
+  value100: 0..100               -> barra de progreso
+  contribution: número (p. ej., 24.6)
+  evidence: texto corto ("OK (≥12)")
+  limited: bool -> muestra badge "Evidencia limitada"
+#}
+{% set w_pct = ((weight or 0) * 100) | round(0) | int %}
+{% set val   = (value100 or 0) | round(0) | int %}
+<div class="rounded-2xl bg-zinc-900/60 p-4 ring-1 ring-white/10">
+  <div class="flex items-center justify-between text-sm">
+    <div class="font-medium text-zinc-200">{{ label }}</div>
+    <div class="text-zinc-400">w {{ w_pct }}%</div>
+  </div>
+
+  <div class="mt-2 h-2 w-full overflow-hidden rounded-full bg-zinc-800" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ val }}">
+    <div class="h-full bg-sky-500" style="width: {{ val }}%"></div>
+  </div>
+
+  <div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-zinc-400">
+    <span>Valor: <span class="text-zinc-200">{{ val }}</span></span>
+    <span>Contrib.: <span class="text-zinc-200">{{ ('%.1f'|format(contribution if contribution is not none else 0)) }}</span></span>
+    {% if evidence %}
+      <span>Evid.: <span class="text-zinc-200">{{ evidence }}</span></span>
+    {% endif %}
+    {% if limited %}
+      <span class="rounded-full bg-amber-500/10 px-2 py-0.5 text-[11px] text-amber-300 ring-1 ring-amber-400/20">Evidencia limitada</span>
+    {% endif %}
+  </div>
+</div>
+{%- endmacro %}

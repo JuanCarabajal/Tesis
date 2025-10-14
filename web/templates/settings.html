@@ -1,7 +1,52 @@
 {% extends "base.html" %}
+
 {% block content %}
-<div class="bg-white rounded-2xl shadow p-8">
-  <h2 class="text-xl font-semibold mb-2">Ajustes</h2>
-  <p class="text-slate-600">Umbrales, mapas y opciones de visualización — próximamente.</p>
+<h1 class="mb-2 text-2xl font-semibold">Umbrales, mapas y preferencias</h1>
+<p class="mb-4 text-sm text-zinc-400">Ajustes visuales del análisis (demo, no persiste).</p>
+
+<div class="grid gap-4 md:grid-cols-2">
+  <div class="rounded-2xl bg-zinc-900/60 p-4 ring-1 ring-white/10">
+    <div class="mb-3 text-sm text-zinc-300">Umbrales de KPI</div>
+    <div class="space-y-3">
+      <label class="flex items-center justify-between text-sm">
+        <span>Trades ≤5s (bueno ≥)</span>
+        <input type="number" value="70" class="w-20 rounded-md bg-zinc-950 px-2 py-1 text-right ring-1 ring-white/10">
+      </label>
+      <label class="flex items-center justify-between text-sm">
+        <span>Post-plant (bueno ≥)</span>
+        <input type="number" value="70" class="w-20 rounded-md bg-zinc-950 px-2 py-1 text-right ring-1 ring-white/10">
+      </label>
+      <label class="flex items-center justify-between text-sm">
+        <span>Utility dmg/rd (bueno ≥)</span>
+        <input type="number" value="15" class="w-20 rounded-md bg-zinc-950 px-2 py-1 text-right ring-1 ring-white/10">
+      </label>
+      <label class="flex items-center justify-between text-sm">
+        <span>Opening impact (bueno ≥)</span>
+        <input type="number" value="0.20" step="0.01" class="w-20 rounded-md bg-zinc-950 px-2 py-1 text-right ring-1 ring-white/10">
+      </label>
+      <label class="flex items-center justify-between text-sm">
+        <span>2vX conversion (bueno ≥)</span>
+        <input type="number" value="60" class="w-20 rounded-md bg-zinc-950 px-2 py-1 text-right ring-1 ring-white/10">
+      </label>
+    </div>
+    <div class="mt-4 text-right">
+      <button class="rounded-xl bg-white/5 px-3 py-2 text-sm ring-1 ring-white/10 hover:bg-white/10">Aplicar (demo)</button>
+    </div>
+  </div>
+
+  <div class="rounded-2xl bg-zinc-900/60 p-4 ring-1 ring-white/10">
+    <div class="mb-3 text-sm text-zinc-300">Mapa</div>
+    <div class="flex items-center gap-3">
+      <label class="inline-flex items-center gap-2">
+        <input type="radio" name="map" checked>
+        <span>Mirage</span>
+      </label>
+      <label class="inline-flex items-center gap-2 opacity-40">
+        <input type="radio" name="map" disabled>
+        <span>Otros (próximamente)</span>
+      </label>
+    </div>
+    <p class="mt-3 text-xs text-zinc-500">Solo Mirage soportado en el MVP.</p>
+  </div>
 </div>
 {% endblock %}

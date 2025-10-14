@@ -1,18 +1,83 @@
 {% extends "base.html" %}
+
+{% set L = (
+  fixtures.matches if fixtures is defined and fixtures.matches is defined else
+  [
+    {"id":"mirage_001","date":"2025-10-01","map":"mirage","score10":7.3,"opp":"Team A","rounds":26},
+    {"id":"mirage_002","date":"2025-10-05","map":"mirage","score10":6.4,"opp":"Team B","rounds":30},
+    {"id":"mirage_003","date":"2025-10-08","map":"mirage","score10":8.2,"opp":"Team C","rounds":28}
+  ]
+) %}
+
 {% block content %}
-<div class="bg-white rounded-2xl shadow p-6">
-  <h2 class="text-lg font-semibold mb-2">Demos locales</h2>
-  <p class="text-sm text-slate-500 mb-4">Poné tus <code>.dem</code> en la carpeta <code>demos/</code>.</p>
-  <form method="POST" class="flex gap-3 items-center">
-    <select name="demo_name" class="border rounded-lg px-3 py-2 text-sm min-w-[280px]" required>
-      {% for d in demos %}
-        <option value="{{ d }}">{{ d }}</option>
-      {% endfor %}
-    </select>
-    <button class="bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg px-4 py-2">Procesar</button>
-  </form>
-  {% if not demos %}
-  <div class="mt-4 text-sm text-slate-500">No hay demos. Copiá alguna a <code>demos/</code>.</div>
-  {% endif %}
+<div class="mb-6 flex items-center justify-between">
+  <div>
+    <h1 class="text-2xl font-semibold">Historial de matches</h1>
+    <p class="text-sm text-zinc-400">Revisá análisis anteriores y compará tu progreso.</p>
+  </div>
 </div>
+
+<div class="mb-4 flex flex-wrap gap-2">
+  <input id="q" placeholder="Buscar rival o id…" class="rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-sky-500">
+  <select id="map" class="rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-sm">
+    <option value="">Todos los mapas</option>
+    <option value="mirage" selected>Mirage</option>
+  </select>
+</div>
+
+<div id="list" class="grid gap-3">
+  {% for m in L %}
+  <div class="flex items-center justify-between rounded-2xl bg-zinc-900/60 p-4 ring-1 ring-white/10">
+    <div class="flex min-w-0 items-center gap-4">
+      <span class="rounded-full bg-sky-500/10 px-2 py-0.5 text-xs text-sky-300 ring-1 ring-sky-400/30 capitalize">{{ m.map }}</span>
+      <div class="min-w-0">
+        <div class="font-medium truncate">{{ m.id }}</div>
+        <div class="text-xs text-zinc-400">{{ m.date }} · vs {{ m.opp }} · {{ m.rounds }} rondas</div>
+      </div>
+    </div>
+    <div class="flex items-center gap-3">
+      <div class="rounded-full bg-zinc-900 ring-1 ring-white/10 px-3 py-1 text-sm">
+        Score <span class="font-semibold">{{ '%.1f'|format(m.score10) }}</span>
+      </div>
+      <a href="{{ url_for('summary_root') }}" class="rounded-xl bg-white/5 px-3 py-2 text-sm ring-1 ring-white/10 hover:bg-white/10">Ver</a>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="mt-6 rounded-2xl bg-zinc-900/60 p-4 ring-1 ring-white/10">
+  <div class="mb-2 text-sm text-zinc-300">Comparativa rápida (últimos 3)</div>
+  <div class="grid grid-cols-3 gap-3 text-sm">
+    {% for m in L %}
+    <div class="rounded-xl bg-zinc-950 p-3 ring-1 ring-white/10">
+      <div class="text-xs text-zinc-400">{{ m.date }}</div>
+      <div class="mt-1 font-semibold">{{ m.id }}</div>
+      <div class="mt-2 text-zinc-400">Score: <span class="text-white">{{ '%.1f'|format(m.score10) }}</span></div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+(() => {
+  const rows = [...document.querySelectorAll('#list > div')];
+  const q = document.getElementById('q');
+  const map = document.getElementById('map');
+  const filt = () => {
+    const s = (q.value||'').toLowerCase();
+    const mp = map.value;
+    rows.forEach(row=>{
+      const text = row.innerText.toLowerCase();
+      const okQ = !s || text.includes(s);
+      const okM = !mp || row.querySelector('.capitalize').textContent.trim() === mp;
+      row.style.display = (okQ && okM) ? '' : 'none';
+    });
+  };
+  q.addEventListener('input',filt);
+  map.addEventListener('change',filt);
+})();
+</script>
 {% endblock %}

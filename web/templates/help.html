@@ -1,7 +1,25 @@
 {% extends "base.html" %}
+
 {% block content %}
-<div class="bg-white rounded-2xl shadow p-8">
-  <h2 class="text-xl font-semibold mb-2">Ayuda</h2>
-  <p class="text-slate-600">Guías rápidas y FAQ — próximamente.</p>
+<h1 class="mb-2 text-2xl font-semibold">Guías y preguntas frecuentes</h1>
+<p class="mb-4 text-sm text-zinc-400">Resumen rápido de cómo leer el tablero y qué significan los KPIs.</p>
+
+<div class="grid gap-3">
+  <details class="rounded-2xl bg-zinc-900/60 p-4 ring-1 ring-white/10" open>
+    <summary class="cursor-pointer list-none font-medium">¿Qué es el Score 1–10?</summary>
+    <p class="mt-2 text-sm text-zinc-300">Es un score agregado (0–100 → 1–10) con pesos: Trades 30%, Post-plant 25%, Utility 20%, Opening 15%, 2vX 10%. Repondera si falta evidencia.</p>
+  </details>
+  <details class="rounded-2xl bg-zinc-900/60 p-4 ring-1 ring-white/10">
+    <summary class="cursor-pointer list-none font-medium">¿Cómo se calcula “Post-plant A vs B”?</summary>
+    <p class="mt-2 text-sm text-zinc-300">Win rate por sitio (A/B), intentos y T vivos al finalizar la ronda según rounds.csv y events.csv anotados por zonas (Mirage).</p>
+  </details>
+  <details class="rounded-2xl bg-zinc-900/60 p-4 ring-1 ring-white/10">
+    <summary class="cursor-pointer list-none font-medium">Zonas de Mirage</summary>
+    <p class="mt-2 text-sm text-zinc-300">Se usan subzonas canónicas (Jungle, Ticket, Window, Van, Bench, Tetris, etc.). El overlay prioriza zonas chicas→grandes.</p>
+  </details>
+  <details class="rounded-2xl bg-zinc-900/60 p-4 ring-1 ring-white/10">
+    <summary class="cursor-pointer list-none font-medium">¿Qué pasa si la demo está truncada?</summary>
+    <p class="mt-2 text-sm text-zinc-300">El parser genera salida parcial y el frontend marca evidencia limitada donde corresponda.</p>
+  </details>
 </div>
 {% endblock %}

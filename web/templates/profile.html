@@ -1,7 +1,40 @@
 {% extends "base.html" %}
+
 {% block content %}
-<div class="bg-white rounded-2xl shadow p-8">
-  <h2 class="text-xl font-semibold mb-2">Mi perfil</h2>
-  <p class="text-slate-600">Sección en construcción. Acá vas a poder configurar tu nick, rol, y preferencias.</p>
+<h1 class="mb-2 text-2xl font-semibold">Perfil del jugador</h1>
+<p class="mb-4 text-sm text-zinc-400">Ajustes personales y tendencias (demo).</p>
+
+<div class="grid gap-4 md:grid-cols-3">
+  <div class="rounded-2xl bg-zinc-900/60 p-4 ring-1 ring-white/10">
+    <div class="text-sm text-zinc-400">Nick</div>
+    <div class="mt-1 font-medium">player_demo</div>
+  </div>
+  <div class="rounded-2xl bg-zinc-900/60 p-4 ring-1 ring-white/10">
+    <div class="text-sm text-zinc-400">Rol</div>
+    <div class="mt-1 font-medium">Entry / Flex</div>
+  </div>
+  <div class="rounded-2xl bg-zinc-900/60 p-4 ring-1 ring-white/10">
+    <div class="text-sm text-zinc-400">Lado favorito</div>
+    <div class="mt-1 font-medium">T (54%)</div>
+  </div>
+</div>
+
+<div class="mt-6 grid gap-4 md:grid-cols-2">
+  <div class="rounded-2xl bg-zinc-900/60 p-4 ring-1 ring-white/10">
+    <div class="mb-2 text-sm text-zinc-300">Tendencia de openings</div>
+    <ul class="text-sm text-zinc-300">
+      <li>Apps B → -0.06 impact</li>
+      <li>Top Mid → +0.08 impact</li>
+      <li>Tetris/Palacio → +0.03 impact</li>
+    </ul>
+  </div>
+  <div class="rounded-2xl bg-zinc-900/60 p-4 ring-1 ring-white/10">
+    <div class="mb-2 text-sm text-zinc-300">Zonas más peligrosas</div>
+    <ul class="text-sm text-zinc-300">
+      <li>Jungle / Ticket</li>
+      <li>Window</li>
+      <li>Van / Bench</li>
+    </ul>
+  </div>
 </div>
 {% endblock %}

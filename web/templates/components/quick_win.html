@@ -1,0 +1,23 @@
+{% macro quick_win(q) -%}
+{# q: { id, title, text, severity: 'low'|'med'|'high' } #}
+{% set sev = (q.severity|lower if q.severity is defined else 'med') %}
+{% set cfg = {
+  'low':  {'bg':'bg-emerald-500/10','ring':'ring-emerald-400/30','dot':'bg-emerald-300','text':'text-emerald-300'},
+  'med':  {'bg':'bg-amber-500/10',  'ring':'ring-amber-400/30',  'dot':'bg-amber-300',  'text':'text-amber-300'},
+  'high': {'bg':'bg-rose-500/10',   'ring':'ring-rose-400/30',   'dot':'bg-rose-300',   'text':'text-rose-300'}
+}[sev] %}
+<div class="rounded-2xl bg-zinc-900/60 p-4 ring-1 ring-white/10">
+  <div class="mb-1 flex items-center gap-2">
+    <span class="inline-flex items-center gap-2 rounded-full px-2 py-0.5 text-[11px] ring-1 {{ cfg.bg }} {{ cfg.ring }} {{ cfg.text }}">
+      <span class="inline-block h-1.5 w-1.5 rounded-full {{ cfg.dot }}"></span>
+      {{ sev|capitalize }}
+    </span>
+    <div class="text-sm font-medium text-zinc-100 truncate">
+      {{ q.title if q.title is defined else 'Sugerencia' }}
+    </div>
+  </div>
+  <div class="text-sm text-zinc-300">
+    {{ q.text if q.text is defined else '' }}
+  </div>
+</div>
+{%- endmacro %}

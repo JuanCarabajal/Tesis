@@ -2,7 +2,10 @@ module cs2dem
 
 go 1.24.5
 
-require github.com/markus-wa/demoinfocs-golang/v5 v5.0.2
+require (
+	github.com/markus-wa/demoinfocs-golang/v5 v5.0.2
+	gopkg.in/yaml.v3 v3.0.1
+)
 
 require (
 	github.com/golang/geo v0.0.0-20230421003525-6adc56603217 // indirect

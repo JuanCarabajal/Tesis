@@ -1,0 +1,52 @@
+{% macro table_events(rows) -%}
+<div class="rounded-2xl bg-zinc-900/60 p-4 ring-1 ring-white/10">
+  <div class="mb-3 flex items-center justify-between">
+    <div class="text-sm text-zinc-300">Eventos (muestra)</div>
+    <input id="evtFilter" placeholder="Filtrar por killer/victim/zone…"
+           class="rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-sky-500" />
+  </div>
+  <div class="overflow-x-auto">
+    <table class="w-full text-left text-sm text-zinc-300">
+      <thead class="text-xs text-zinc-400">
+        <tr>
+          <th class="py-2 pr-4">Ronda</th>
+          <th class="py-2 pr-4">ts</th>
+          <th class="py-2 pr-4">Killer</th>
+          <th class="py-2 pr-4">Victim</th>
+          <th class="py-2 pr-4">Attacker Zone</th>
+          <th class="py-2 pr-4">Victim Zone</th>
+        </tr>
+      </thead>
+      <tbody id="evtBody">
+        {% for r in rows %}
+        <tr class="border-t border-white/5">
+          <td class="py-2 pr-4 text-zinc-400">{{ r.round }}</td>
+          <td class="py-2 pr-4 text-zinc-400">{{ '%.3f'|format(r.ts) }}</td>
+          <td class="py-2 pr-4">{{ r.killer }}</td>
+          <td class="py-2 pr-4">{{ r.victim }}</td>
+          <td class="py-2 pr-4">{{ r.attacker_zone_id }}</td>
+          <td class="py-2 pr-4">{{ r.victim_zone_id }}</td>
+        </tr>
+        {% endfor %}
+        {% if not rows or rows|length == 0 %}
+        <tr><td colspan="6" class="py-4 text-zinc-500">Sin eventos de muestra.</td></tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+(function(){
+  const input = document.getElementById('evtFilter');
+  if (!input) return;
+  input.addEventListener('input', () => {
+    const q = input.value.toLowerCase();
+    document.querySelectorAll('#evtBody tr').forEach(tr=>{
+      const text = tr.innerText.toLowerCase();
+      tr.style.display = text.includes(q) ? '' : 'none';
+    });
+  });
+})();
+</script>
+{%- endmacro %}

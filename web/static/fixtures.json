@@ -1,0 +1,41 @@
+{
+  "summaryMock": {
+    "matchId": "mirage_abc",
+    "date": "2025-10-10",
+    "map": "mirage",
+    "score10": 7.3,
+    "score100": 73,
+    "kpis": [
+      {"id":"trades","label":"Trades ≤5s","weight":0.30,"value100":82,"evidence":"OK (≥12)","contribution":24.6},
+      {"id":"postplant","label":"Post-plant","weight":0.25,"value100":61,"evidence":"A: 6, B: 4","contribution":15.3},
+      {"id":"utility","label":"Utility dmg/rd","weight":0.20,"value100":55,"evidence":"12 rondas","contribution":11.0},
+      {"id":"opening","label":"Opening impact","weight":0.15,"value100":68,"evidence":"8 openings","contribution":10.2},
+      {"id":"clutch2vx","label":"2vX conversion","weight":0.10,"value100":70,"evidence":"5 casos","contribution":7.0}
+    ],
+    "postplant": {
+      "A": {"attempts":6,"winrate":0.53,"tsAliveEndAvg":2.1},
+      "B": {"attempts":4,"winrate":0.65,"tsAliveEndAvg":2.7}
+    },
+    "topDeathZones": [
+      {"zone":"Jungle","site":"A","pct":0.22},
+      {"zone":"Ticket","site":"A","pct":0.18},
+      {"zone":"Window","site":"MID","pct":0.14}
+    ],
+    "quickWins": [
+      {"id":"qw1","title":"After-plant A flojo","text":"Practicar post-plant desde Stairs/Jungle/Ticket; mejorar trades ≤5s tras plantar.","severity":"med"},
+      {"id":"qw2","title":"Openings negativos en B Apps","text":"Subir utilidad temprana y timings en B (Apps/Van/Bench).","severity":"high"},
+      {"id":"qw3","title":"Mid bajo vs Window/Connector","text":"Mejorar humos/flash y reclears coordinados.","severity":"low"}
+    ]
+  },
+  "eventsSample": [
+    {"round":7,"ts":14.233,"killer":"NiKo","victim":"Perfecto","attacker_zone_id":"Tetris","attacker_site":"A","victim_zone_id":"Jungle","victim_site":"A"},
+    {"round":7,"ts":31.902,"killer":"magisk","victim":"m0NESY","attacker_zone_id":"Ticket","attacker_site":"A","victim_zone_id":"DefaultA","victim_site":"A"},
+    {"round":8,"ts":9.5,"killer":"huNter-","victim":"ZywOo","attacker_zone_id":"Top Mid","attacker_site":"MID","victim_zone_id":"Window","victim_site":"MID"},
+    {"round":9,"ts":51.889,"killer":"s1mple","victim":"device","attacker_zone_id":"Van","attacker_site":"B","victim_zone_id":"Bench","victim_site":"B"}
+  ],
+  "roundsSample": [
+    {"round":7,"end_ts":86.421,"plant_ts":45.113,"plant_site":"A","plant_zone_id":"DefaultA"},
+    {"round":8,"end_ts":74.005},
+    {"round":9,"end_ts":92.337,"plant_ts":51.889,"plant_site":"B","plant_zone_id":"Van"}
+  ]
+}

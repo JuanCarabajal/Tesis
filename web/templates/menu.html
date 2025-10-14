@@ -1,125 +1,184 @@
 {% extends "base.html" %}
 {% block content %}
+<div class="relative login-bg">
 
-<section class="mb-8">
-  <div class="bg-white rounded-2xl shadow p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-    <div>
-      <h1 class="text-2xl font-bold">¡Hola! ¿Qué querés hacer hoy?</h1>
-      <p class="text-slate-600 mt-1">Subí una demo, revisá análisis, o ajustá tu perfil. Todo desde este panel.</p>
+  <!-- BG aurora -->
+  <div class="pointer-events-none absolute inset-0 -z-10 blur-3xl opacity-30"
+       style="background:
+         radial-gradient(40% 40% at 0% 0%, rgba(56,189,248,.18), transparent),
+         radial-gradient(45% 40% at 100% 0%, rgba(167,139,250,.14), transparent),
+         radial-gradient(50% 50% at 50% 100%, rgba(56,189,248,.10), transparent)"></div>
+
+  <!-- HERO -->
+  <section class="mx-auto max-w-7xl px-4 pt-10">
+    <div class="relative flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
+      <!-- watermark marca -->
+      <img src="{{ url_for('static', filename='brand/mark.png') }}"
+           alt="" aria-hidden="true"
+           class="pointer-events-none absolute -right-4 -top-8 h-24 w-auto opacity-15 blur-[2px] md:right-4 md:-top-10 md:h-28" />
+
+      <div>
+        <div class="text-sm text-zinc-400">Sharpix · CS2 Feedback (Mirage)</div>
+        <h1 class="mt-1 text-4xl font-semibold tracking-tight text-zinc-100">
+          Bienvenido, <span class="bg-gradient-to-r from-sky-400 to-violet-400 bg-clip-text text-transparent">{{ current_user.username }}</span>
+        </h1>
+        <p class="mt-3 max-w-2xl text-zinc-400">
+          Subí una demo de <strong>Mirage</strong>, obtené un <strong>score 1–10</strong>, KPIs y <strong>Quick Wins</strong> mapa-aware. También podés revisar tus partidos recientes.
+        </p>
+
+        <div class="mt-6 flex flex-wrap gap-3">
+          <!-- CTA principal -->
+          <a href="{{ url_for('upload') }}"
+             class="group inline-flex items-center gap-2 rounded-2xl bg-sky-500 px-5 py-3 text-sm font-medium text-white
+                    shadow ring-1 ring-sky-300/30 transition will-change-transform
+                    hover:-translate-y-0.5 hover:bg-sky-400 hover:shadow-[0_8px_30px_rgba(56,189,248,.25)]">
+            <span class="-ml-0.5 text-base">⬆️</span>
+            Subir .dem
+            <span class="ml-1 opacity-0 transition group-hover:translate-x-0.5 group-hover:opacity-100">→</span>
+          </a>
+
+          <a href="{{ url_for('summary_root') }}"
+             class="inline-flex items-center gap-2 rounded-2xl bg-zinc-800 px-5 py-3 text-sm font-medium text-zinc-200
+                    ring-1 ring-white/10 transition hover:-translate-y-0.5 hover:bg-zinc-700">
+            Ver demo de ejemplo
+          </a>
+        </div>
+      </div>
+
+      <!-- mini métricas -->
+      <div class="grid grid-cols-3 gap-3 md:w-[520px]">
+        {% set total = (recent_matches|length) if recent_matches is defined else 0 %}
+        <div class="rounded-2xl bg-zinc-900/60 p-4 ring-1 ring-white/10 transition hover:ring-sky-400/30">
+          <div class="text-[11px] uppercase tracking-wider text-zinc-400">Partidos</div>
+          <div class="mt-1 text-2xl font-semibold">{{ total }}</div>
+        </div>
+        <div class="rounded-2xl bg-zinc-900/60 p-4 ring-1 ring-white/10 transition hover:ring-violet-400/30">
+          <div class="text-[11px] uppercase tracking-wider text-zinc-400">Prom. Score</div>
+          <div class="mt-1 text-2xl font-semibold">
+            {% if recent_matches is defined and recent_matches %}
+              {{ ('%.1f'|format((recent_matches|map(attribute='score100')|sum) / (recent_matches|length) / 10.0)) }}
+            {% else %}—{% endif %}
+          </div>
+        </div>
+        <div class="rounded-2xl bg-zinc-900/60 p-4 ring-1 ring-white/10 transition hover:ring-emerald-400/30">
+          <div class="text-[11px] uppercase tracking-wider text-zinc-400">Último</div>
+          <div class="mt-1 text-2xl font-semibold">
+            {% if recent_matches is defined and recent_matches %}
+              {{ (recent_matches[0].score100 or 0) // 10 }}.<small>{{ (recent_matches[0].score100 or 0) % 10 }}</small>
+            {% else %}—{% endif %}
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="flex gap-3">
-      <a href="{{ url_for('upload') }}" class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white">Subir demo</a>
-      {% if has_demos %}
-        <a href="{{ url_for('demos') }}" class="px-4 py-2 rounded-lg bg-slate-900 hover:bg-black text-white">Demos locales</a>
-        {% endif %}
+  </section>
 
+  <!-- ACCIONES -->
+  <section class="mx-auto mt-10 max-w-7xl px-4">
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <!-- Card acción (con pseudo tilt por translate y glow) -->
+      <a href="{{ url_for('upload') }}"
+         class="group relative overflow-hidden rounded-2xl bg-zinc-900/60 p-5 ring-1 ring-white/10 transition
+                hover:-translate-y-0.5 hover:ring-sky-400/30">
+        <div class="pointer-events-none absolute -top-12 right-0 h-28 w-28 rounded-full bg-sky-500/20 blur-2xl transition
+                    group-hover:opacity-90"></div>
+        <div class="text-lg font-medium text-zinc-100">Subir demo</div>
+        <p class="mt-1 text-sm text-zinc-400">Procesá una .dem y obtené el resumen completo.</p>
+        <div class="mt-4 inline-flex items-center gap-2 text-sky-400 transition group-hover:translate-x-1">Comenzar →</div>
+      </a>
+
+      <a href="{{ url_for('upload') }}"
+         class="group relative overflow-hidden rounded-2xl bg-zinc-900/60 p-5 ring-1 ring-white/10 transition
+                hover:-translate-y-0.5 hover:ring-violet-400/30">
+        <div class="pointer-events-none absolute -bottom-12 left-0 h-28 w-28 rounded-full bg-violet-500/20 blur-2xl"></div>
+        <div class="text-lg font-medium text-zinc-100">Continuar análisis</div>
+        <p class="mt-1 text-sm text-zinc-400">Subí otra demo para comparar desempeño y tendencias.</p>
+        <div class="mt-4 inline-flex items-center gap-2 text-violet-400 transition group-hover:translate-x-1">Seguir →</div>
+      </a>
+
+      <a href="{{ url_for('summary_root') }}"
+         class="group relative overflow-hidden rounded-2xl bg-zinc-900/60 p-5 ring-1 ring-white/10 transition
+                hover:-translate-y-0.5 hover:ring-emerald-400/30">
+        <div class="pointer-events-none absolute -top-12 right-0 h-28 w-28 rounded-full bg-emerald-500/20 blur-2xl"></div>
+        <div class="text-lg font-medium text-zinc-100">Ver demo de ejemplo</div>
+        <p class="mt-1 text-sm text-zinc-400">Explorá el Summary con datos simulados.</p>
+        <div class="mt-4 inline-flex items-center gap-2 text-emerald-400 transition group-hover:translate-x-1">Abrir →</div>
+      </a>
+
+      <a href="{{ url_for('help_page') }}"
+         class="group relative overflow-hidden rounded-2xl bg-zinc-900/60 p-5 ring-1 ring-white/10 transition
+                hover:-translate-y-0.5 hover:ring-amber-400/30">
+        <div class="pointer-events-none absolute -bottom-12 left-0 h-28 w-28 rounded-full bg-amber-500/20 blur-2xl"></div>
+        <div class="text-lg font-medium text-zinc-100">Ayuda & cómo funciona</div>
+        <p class="mt-1 text-sm text-zinc-400">Zonas Mirage, KPIs y Quick Wins.</p>
+        <div class="mt-4 inline-flex items-center gap-2 text-amber-400 transition group-hover:translate-x-1">Leer →</div>
+      </a>
     </div>
-  </div>
-</section>
+  </section>
 
-<section>
-  <div class="grid md:grid-cols-3 gap-6">
-    <!-- Resumen -->
-    <a href="{{ url_for('summary', match_id='match_demo') }}" class="group block bg-white rounded-2xl shadow p-6 hover:shadow-lg transition">
-      <div class="flex items-center gap-3">
-        <div class="p-3 rounded-xl bg-indigo-50 text-indigo-600">
-          <!-- chart icon -->
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M3 3h2v18H3V3zm16 7h2v11h-2V10zM8 13h2v8H8v-8zm4-6h2v14h-2V7z"/></svg>
-        </div>
-        <div>
-          <div class="font-semibold">Resumen</div>
-          <div class="text-sm text-slate-500">Quick Wins y KPIs</div>
-        </div>
+  <!-- RECIENTES -->
+  <section class="mx-auto mt-10 max-w-7xl px-4">
+    <div class="flex items-center justify-between">
+      <h2 class="text-lg font-semibold text-zinc-100">Tus últimos partidos</h2>
+      {% if recent_matches is defined and recent_matches %}
+        <a href="{{ url_for('analytics') }}" class="text-sm text-zinc-400 hover:text-zinc-200">Ver todos</a>
+      {% endif %}
+    </div>
+
+    {% if recent_matches is defined and recent_matches %}
+      <div class="mt-4 grid gap-3 md:grid-cols-2">
+        {% for m in recent_matches[:6] %}
+          <div class="group relative flex items-center justify-between overflow-hidden rounded-2xl
+                      bg-zinc-900/60 p-4 ring-1 ring-white/10 transition hover:bg-zinc-900">
+            <div>
+              <div class="text-sm text-zinc-300">
+                <span class="rounded-md bg-zinc-800 px-2 py-0.5 text-[11px] uppercase tracking-wide">Mirage</span>
+                <span class="ml-2 text-zinc-500">{{ m.created_at.strftime('%Y-%m-%d') if m.created_at else '' }}</span>
+              </div>
+              <div class="mt-1 text-zinc-100">Match: <span class="font-mono text-zinc-200">{{ m.match_id }}</span></div>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <!-- Score pill -->
+              <div class="relative rounded-xl bg-zinc-800 px-3 py-2 text-right ring-1 ring-white/10">
+                <div class="text-[10px] uppercase text-zinc-400">Score</div>
+                <div class="text-lg font-semibold">{{ (m.score100 or 0) // 10 }}.<small>{{ (m.score100 or 0) % 10 }}</small></div>
+                <div class="pointer-events-none absolute -right-6 -top-6 h-10 w-10 rounded-full bg-sky-500/10 blur-xl"></div>
+              </div>
+              <!-- Atajos aparecen en hover en pantallas chicas también -->
+              <div class="ml-2 flex gap-2">
+                <a class="rounded-lg bg-zinc-800 px-3 py-1.5 text-sm text-zinc-200 ring-1 ring-white/10 transition hover:bg-zinc-700"
+                   href="{{ url_for('summary', match_id=m.match_id) }}">Summary</a>
+                <a class="rounded-lg bg-zinc-800 px-3 py-1.5 text-sm text-zinc-200 ring-1 ring-white/10 transition hover:bg-zinc-700"
+                   href="{{ url_for('rounds', match_id=m.match_id) }}">Rounds</a>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
       </div>
-      <div class="mt-4 text-sm text-slate-600">Ver el tablero con indicadores y hallazgos.</div>
-    </a>
-
-    <!-- Rondas -->
-    <a href="{{ url_for('rounds', match_id='match_demo') }}" class="group block bg-white rounded-2xl shadow p-6 hover:shadow-lg transition">
-      <div class="flex items-center gap-3">
-        <div class="p-3 rounded-xl bg-emerald-50 text-emerald-600">
-          <!-- list icon -->
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M3 5h18v2H3V5zm0 6h12v2H3v-2zm0 6h18v2H3v-2z"/></svg>
-        </div>
-        <div>
-          <div class="font-semibold">Notas por ronda</div>
-          <div class="text-sm text-slate-500">Detalles y flags</div>
-        </div>
+    {% else %}
+      <div class="mt-4 rounded-2xl bg-zinc-900/50 p-6 text-zinc-400 ring-1 ring-white/10">
+        Todavía no subiste partidos. Probá con <a class="text-sky-400 hover:text-sky-300" href="{{ url_for('upload') }}">Subir demo</a>
+        o mirá la <a class="text-sky-400 hover:text-sky-300" href="{{ url_for('summary_root') }}">demo de ejemplo</a>.
       </div>
-      <div class="mt-4 text-sm text-slate-600">Filtrá y revisá puntos clave por ronda.</div>
-    </a>
+    {% endif %}
+  </section>
 
-    <!-- Subir demo -->
-    <a href="{{ url_for('upload') }}" class="group block bg-white rounded-2xl shadow p-6 hover:shadow-lg transition">
-      <div class="flex items-center gap-3">
-        <div class="p-3 rounded-xl bg-purple-50 text-purple-600">
-          <!-- upload icon -->
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M5 20h14v-2H5v2zM12 2l5 5h-3v6h-4V7H7l5-5z"/></svg>
-        </div>
-        <div>
-          <div class="font-semibold">Subir demo</div>
-          <div class="text-sm text-slate-500">.dem o CSVs</div>
-        </div>
+  <!-- TIPS -->
+  <section class="mx-auto mt-10 max-w-7xl px-4 pb-12">
+    <div class="grid gap-3 md:grid-cols-3">
+      <div class="rounded-2xl bg-zinc-900/60 p-4 ring-1 ring-white/10 transition hover:ring-sky-400/30">
+        <div class="text-sm font-medium text-zinc-200">Zonas Mirage</div>
+        <p class="mt-1 text-sm text-zinc-400">Usamos un YML canónico con sub-zonas (Jungle, Ticket, Window, etc.) para Quick Wins mapa-aware.</p>
       </div>
-      <div class="mt-4 text-sm text-slate-600">Procesá una demo y generá feedback.</div>
-    </a>
-
-    <!-- Mis análisis (placeholder) -->
-    <a href="{{ url_for('analytics') }}" class="group block bg-white rounded-2xl shadow p-6 hover:shadow-lg transition">
-      <div class="flex items-center gap-3">
-        <div class="p-3 rounded-xl bg-amber-50 text-amber-600">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h8V3H3v10zm10 8h8V3h-8v18zM3 21h8v-6H3v6z"/></svg>
-        </div>
-        <div>
-          <div class="font-semibold">Mis análisis</div>
-          <div class="text-xs inline-block px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">Próximamente</div>
-        </div>
+      <div class="rounded-2xl bg-zinc-900/60 p-4 ring-1 ring-white/10 transition hover:ring-violet-400/30">
+        <div class="text-sm font-medium text-zinc-200">Score 1–10</div>
+        <p class="mt-1 text-sm text-zinc-400">Ponderamos 5 KPIs y re-ponderamos si falta evidencia (no penaliza).</p>
       </div>
-      <div class="mt-4 text-sm text-slate-600">Historial de matches y comparativas.</div>
-    </a>
-
-    <!-- Mi perfil (placeholder) -->
-    <a href="{{ url_for('profile') }}" class="group block bg-white rounded-2xl shadow p-6 hover:shadow-lg transition">
-      <div class="flex items-center gap-3">
-        <div class="p-3 rounded-xl bg-sky-50 text-sky-600">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.9 0-7 3.1-7 7h14c0-3.9-3.1-7-7-7z"/></svg>
-        </div>
-        <div>
-          <div class="font-semibold">Mi perfil</div>
-          <div class="text-xs inline-block px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">Próximamente</div>
-        </div>
+      <div class="rounded-2xl bg-zinc-900/60 p-4 ring-1 ring-white/10 transition hover:ring-emerald-400/30">
+        <div class="text-sm font-medium text-zinc-200">Subida segura</div>
+        <p class="mt-1 text-sm text-zinc-400">Procesamos localmente tu .dem con overlay de progreso.</p>
       </div>
-      <div class="mt-4 text-sm text-slate-600">Datos de jugador y preferencias.</div>
-    </a>
-
-    <!-- Ajustes (placeholder) -->
-    <a href="{{ url_for('settings') }}" class="group block bg-white rounded-2xl shadow p-6 hover:shadow-lg transition">
-      <div class="flex items-center gap-3">
-        <div class="p-3 rounded-xl bg-rose-50 text-rose-600">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M19.14,12.94a7.2,7.2,0,0,0,.05-.94,7.2,7.2,0,0,0-.05-.94l2.11-1.65a.5.5,0,0,0,.12-.64l-2-3.46a.5.5,0,0,0-.6-.22l-2.49,1a7.28,7.28,0,0,0-1.63-.94l-.38-2.65A.5.5,0,0,0,11.76,2H8.24a.5.5,0,0,0-.5.42L7.36,5.07a7.28,7.28,0,0,0-1.63.94l-2.49-1a.5.5,0,0,0-.6.22l-2,3.46a.5.5,0,0,0,.12.64L2.86,11.06a7.2,7.2,0,0,0-.05.94,7.2,7.2,0,0,0,.05.94L.75,14.59a.5.5,0,0,0-.12.64l2,3.46a.5.5,0,0,0,.6.22l2.49-1a7.28,7.28,0,0,0,1.63.94l.38,2.65a.5.5,0,0,0,.5.42h3.52a.5.5,0,0,0,.5-.42l.38-2.65a7.28,7.28,0,0,0,1.63-.94l2.49,1a.5.5,0,0,0,.6-.22l2-3.46a.5.5,0,0,0-.12-.64ZM12,15.5A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z"/></svg>
-        </div>
-        <div>
-          <div class="font-semibold">Ajustes</div>
-          <div class="text-xs inline-block px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">Próximamente</div>
-        </div>
-      </div>
-      <div class="mt-4 text-sm text-slate-600">Umbrales, mapas y preferencias.</div>
-    </a>
-
-    <!-- Ayuda (placeholder) -->
-    <a href="{{ url_for('help_page') }}" class="group block bg-white rounded-2xl shadow p-6 hover:shadow-lg transition">
-      <div class="flex items-center gap-3">
-        <div class="p-3 rounded-xl bg-slate-100 text-slate-700">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M11 18h2v2h-2v-2zm1-16C6.48 2 2 6.03 2 11s4.48 9 10 9 10-4.03 10-9S17.52 2 12 2zm1 14h-2v-2h2v2zm1.07-7.75-.9.92C12.45 9.9 12 10.5 12 12h-2v-.5c0-1 .45-1.9 1.17-2.58l1.24-1.26a2 2 0 1 0-3.41-1.41H7a4 4 0 1 1 7.07 2.92z"/></svg>
-        </div>
-        <div>
-          <div class="font-semibold">Ayuda</div>
-          <div class="text-xs inline-block px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">Próximamente</div>
-        </div>
-      </div>
-      <div class="mt-4 text-sm text-slate-600">Guías y preguntas frecuentes.</div>
-    </a>
-  </div>
-</section>
-
+    </div>
+  </section>
+</div>
 {% endblock %}

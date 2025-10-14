@@ -1,0 +1,238 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Crear cuenta' if mode=='register' else 'Ingresar' }} · Sharpix{% endblock %}
+
+{% block head %}
+<style>
+  /* Fondo claro con gradiente + spotlight + viñeta */
+  .login-bg::before{
+    content:"";
+    position:fixed; inset:0; z-index:-1;
+    background:
+      radial-gradient(80% 60% at 40% 38%, rgba(255,255,255,.55) 0%, rgba(255,255,255,.10) 40%, rgba(30,42,82,0) 100%),
+      linear-gradient(145deg, #f7f8fa 0%, #d5d9ff 20%, #7ac4ff 55%, #1e2a52 100%);
+    background-attachment: fixed;
+    animation: breathe 20s ease-in-out infinite alternate;
+  }
+  .login-bg::after{
+    content:"";
+    position:fixed; inset:0; z-index:-1; pointer-events:none;
+    background:
+      radial-gradient(100% 80% at 50% 15%, rgba(0,0,0,0) 40%, rgba(6,10,18,.20) 100%),
+      radial-gradient(60% 50% at 25% 70%, rgba(6,10,18,.22) 0%, rgba(6,10,18,0) 70%),
+      radial-gradient(70% 60% at 90% 80%, rgba(255,255,255,.12) 0%, rgba(255,255,255,0) 70%);
+  }
+  @keyframes breathe { 0%,100% { filter:brightness(1) } 50% { filter:brightness(1.05) } }
+
+  /* Logo: pulso + punch sutil */
+  @keyframes pulse-glow {
+    0%,100% { opacity:.9; filter: drop-shadow(0 0 18px rgba(56,189,248,.25)); }
+    50%     { opacity:1;  filter: drop-shadow(0 0 42px rgba(56,189,248,.48)); }
+  }
+  .logo-hero{
+    width: clamp(260px, 40vw, 640px);
+    height: auto;
+    animation: pulse-glow 6s ease-in-out infinite;
+    transition: transform .25s ease;
+    filter: drop-shadow(0 4px 16px rgba(56,189,248,.25)) saturate(1.08);
+  }
+  .logo-hero:hover{ transform: scale(1.03); }
+
+  /* Halo animado multicolor detrás del logo */
+  @keyframes rotate-halo {
+    0%   { transform: rotate(0deg) scale(1); opacity:.85; }
+    50%  { transform: rotate(180deg) scale(1.05); opacity:1; }
+    100% { transform: rotate(360deg) scale(1); opacity:.85; }
+  }
+  .logo-halo{
+    position:absolute; inset:-15% -18%;
+    z-index:-1; border-radius:9999px;
+    background:
+      radial-gradient(60% 60% at 45% 50%, rgba(56,189,248,.55) 0%, rgba(56,189,248,0) 65%),
+      radial-gradient(50% 50% at 65% 55%, rgba(167,139,250,.45) 0%, rgba(167,139,250,0) 70%);
+    filter: blur(40px);
+    animation: rotate-halo 16s linear infinite;
+  }
+
+  /* Kicker “Bienvenido a” */
+  .kicker{
+    display:inline-block;
+    padding: .35rem .65rem;
+    border-radius: 9999px;
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: .04em;
+    color: #0f172a;
+    background: linear-gradient(90deg, rgba(56,189,248,.20), rgba(167,139,250,.20));
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.55), 0 6px 24px rgba(15,23,42,.08);
+    backdrop-filter: blur(4px);
+  }
+
+  /* Animaciones de aparición */
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .fade-up{ animation: fade-up .7s ease forwards; }
+  .fade-up.delay-1{ animation-delay: .08s; }
+  .fade-up.delay-2{ animation-delay: .16s; }
+
+  /* Card del form (glass/relieve) */
+  .glass{
+    background: rgba(24,24,27,.65);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+  }
+  .ring-soft{
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,.10) inset,
+      0 10px 30px rgba(2,6,12,.25);
+  }
+
+  /* Botones soft (por si aparecen en otros estados) */
+  button, a.bg-sky-500{
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(56,189,248,.25);
+  }
+  button:hover, a.bg-sky-500:hover{
+    filter: brightness(1.1);
+    box-shadow: 0 4px 20px rgba(56,189,248,.35);
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .login-bg::before{ animation:none; }
+    .logo-hero{ animation:none; }
+    .logo-halo{ animation:none; }
+    .fade-up, .fade-up.delay-1, .fade-up.delay-2{ animation:none; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="relative login-bg">
+
+  <!-- halos decorativos sutiles -->
+  <div class="pointer-events-none absolute inset-0 -z-10">
+    <div class="absolute -top-20 -left-10 h-56 w-56 rounded-full bg-sky-500/15 blur-3xl"></div>
+    <div class="absolute top-32 -right-10 h-64 w-64 rounded-full bg-violet-500/15 blur-3xl"></div>
+  </div>
+
+  <div class="mx-auto grid max-w-7xl grid-cols-1 items-center gap-10 px-4 py-16 lg:grid-cols-2 lg:py-24">
+    <!-- LEFT: hero -->
+    <section class="order-2 lg:order-1">
+      <div class="mb-3 flex items-center gap-2 text-xs text-zinc-600">
+        <img src="{{ url_for('static', filename='brand/mark.png') }}" alt="Sharpix" class="h-4 w-4 opacity-80">
+        <span>CS2 Feedback · Mirage</span>
+      </div>
+
+      <!-- Kicker + logo -->
+      <div class="kicker fade-up">Bienvenido a</div>
+      <div class="relative inline-block mb-2 fade-up delay-1">
+        <div class="logo-halo"></div>
+        <img src="{{ url_for('static', filename='brand/logo.png') }}"
+             alt="Sharpix"
+             class="logo-hero mt-1 select-none" draggable="false">
+      </div>
+
+      <!-- Copy aspiracional (sin botones) -->
+      <div class="mt-4 max-w-xl text-zinc-800/90 fade-up delay-2">
+        <p class="text-lg leading-relaxed mb-4">
+          <strong>Subí tus partidas</strong> y descubrí <strong>qué te separa de tu mejor versión.</strong><br>
+          Desde el <strong>posicionamiento</strong> hasta la <strong>toma de decisiones</strong>,
+          <span class="text-sky-600 font-semibold">Sharpix</span> convierte tus partidas en
+          <strong>entrenamiento inteligente.</strong>
+        </p>
+
+        <ul class="mt-5 space-y-3 text-zinc-900/85">
+          <li class="flex items-start gap-3">
+            <span class="mt-1 inline-flex h-5 w-5 items-center justify-center rounded-full bg-sky-500/20 text-sky-700">✓</span>
+            <div><strong>Detectá patrones</strong> de timing y trade para ganar duelos clave.</div>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="mt-1 inline-flex h-5 w-5 items-center justify-center rounded-full bg-violet-500/20 text-violet-700">✓</span>
+            <div><strong>Optimizá tu posicionamiento</strong>: ángulos, crossfires y defaults en A/B.</div>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="mt-1 inline-flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-700">✓</span>
+            <div><strong>Decidí mejor en mid-round</strong>: rotaciones, retakes y clutches efectivos.</div>
+          </li>
+        </ul>
+      </div>
+
+      <p class="mt-6 text-sm text-zinc-700/80">Procesamiento local · Tus datos permanecen en tu dispositivo.</p>
+    </section>
+
+    <!-- RIGHT: form -->
+    <section class="order-1 lg:order-2">
+      <div class="glass ring-soft rounded-2xl p-6 md:p-7">
+        <h2 class="mb-4 text-xl font-semibold text-white">{{ 'Crear cuenta' if mode=='register' else 'Iniciar sesión' }}</h2>
+
+        <form method="post" class="space-y-4" onsubmit="this.querySelector('button[type=submit]').disabled=true;">
+          {% if mode=='register' %}
+            <div>
+              <label class="mb-1 block text-sm text-zinc-200">Usuario</label>
+              <input name="username" required
+                     class="w-full rounded-lg bg-zinc-800 px-3 py-2.5 text-zinc-100 outline-none ring-1 ring-white/10 transition focus:ring-sky-400/40" />
+            </div>
+            <div>
+              <label class="mb-1 block text-sm text-zinc-200">Email</label>
+              <input type="email" name="email" required
+                     class="w-full rounded-lg bg-zinc-800 px-3 py-2.5 text-zinc-100 outline-none ring-1 ring-white/10 transition focus:ring-sky-400/40" />
+            </div>
+            <div>
+              <label class="mb-1 block text-sm text-zinc-200">Contraseña</label>
+              <div class="relative">
+                <input id="pwd" type="password" name="password" required
+                       class="w-full rounded-lg bg-zinc-800 px-3 py-2.5 pr-10 text-zinc-100 outline-none ring-1 ring-white/10 transition focus:ring-sky-400/40" />
+                <button type="button" class="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-200"
+                        onclick="togglePwd('pwd', this)">👁</button>
+              </div>
+            </div>
+          {% else %}
+            <div>
+              <label class="mb-1 block text-sm text-zinc-200">Usuario o email</label>
+              <input name="identifier" required
+                     class="w-full rounded-lg bg-zinc-800 px-3 py-2.5 text-zinc-100 outline-none ring-1 ring-white/10 transition focus:ring-sky-400/40" />
+            </div>
+            <div>
+              <label class="mb-1 block text-sm text-zinc-200">Contraseña</label>
+              <div class="relative">
+                <input id="pwd" type="password" name="password" required
+                       class="w-full rounded-lg bg-zinc-800 px-3 py-2.5 pr-10 text-zinc-100 outline-none ring-1 ring-white/10 transition focus:ring-sky-400/40" />
+                <button type="button" class="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-200"
+                        onclick="togglePwd('pwd', this)">👁</button>
+              </div>
+            </div>
+            <label class="flex items-center gap-2 text-sm text-zinc-300">
+              <input type="checkbox" name="remember" class="h-4 w-4 rounded border-zinc-600 bg-zinc-800" />
+              Recordarme
+            </label>
+          {% endif %}
+
+          <button type="submit"
+            class="w-full rounded-xl bg-sky-500 px-3 py-2.5 text-white shadow transition hover:-translate-y-0.5 hover:bg-sky-400 disabled:opacity-60">
+            {{ 'Crear cuenta' if mode=='register' else 'Ingresar' }}
+          </button>
+        </form>
+
+        <div class="mt-4 text-center text-sm text-zinc-300">
+          {% if mode=='register' %}
+            ¿Ya tenés cuenta? <a href="{{ url_for('login') }}" class="text-sky-400 hover:text-sky-300">Ingresar</a>
+          {% else %}
+            ¿No tenés cuenta? <a href="{{ url_for('register') }}" class="text-sky-400 hover:text-sky-300">Crear cuenta</a>
+          {% endif %}
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  function togglePwd(id, btn){
+    const i = document.getElementById(id);
+    i.type = i.type === 'password' ? 'text' : 'password';
+    btn.textContent = i.type === 'password' ? '👁' : '🙈';
+  }
+</script>
+{% endblock %}

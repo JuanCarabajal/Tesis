@@ -1,133 +1,91 @@
 {% extends "base.html" %}
+
 {% block content %}
-<!-- Overlay de procesamiento -->
-<div id="overlay" class="fixed inset-0 bg-black/30 backdrop-blur-sm hidden items-center justify-center z-50">
-  <div class="bg-white rounded-2xl p-6 shadow-lg w-[320px] text-center">
-    <div class="animate-spin h-8 w-8 border-4 border-slate-200 border-t-indigo-600 rounded-full mx-auto mb-3"></div>
-    <div class="font-medium" id="overlayTitle">Procesando…</div>
-    <div class="text-sm text-slate-500 mt-1" id="overlaySub">Esto puede tardar unos segundos.</div>
+<section class="rounded-2xl border border-white/10 bg-gradient-to-b from-zinc-950 to-zinc-900 p-10">
+  <div class="mb-6 flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-semibold">Subí tu demo de Mirage</h1>
+      <p class="mt-1 text-sm text-zinc-400">Seleccioná un archivo <code>.dem</code> para analizar.</p>
+    </div>
+    <span class="rounded-full bg-sky-500/10 px-3 py-1 text-xs text-sky-300 ring-1 ring-sky-400/20">
+      Tesis MVP • Mirage
+    </span>
   </div>
-</div>
 
-<div class="grid md:grid-cols-2 gap-6">
-  <!-- Subir .dem -->
-  <div class="bg-white rounded-2xl shadow p-6">
-    <h2 class="text-lg font-semibold mb-2">Subir .dem</h2>
-    <p class="text-sm text-slate-500 mb-4">Procesamos la demo con tu parser y generamos el feedback.</p>
-    <form id="formDem" method="POST" enctype="multipart/form-data" class="space-y-4">
-      <div id="drop" class="border-2 border-dashed rounded-xl p-6 text-center cursor-pointer hover:bg-slate-50">
-        <p class="text-sm text-slate-500">Arrastrá tu <code>.dem</code> aquí o hacé click</p>
-        <input id="demo_file" class="hidden" type="file" name="demo_file" accept=".dem">
+  <form id="uploadForm" method="POST" action="{{ url_for('upload') }}" enctype="multipart/form-data" class="grid gap-6">
+    <div class="rounded-2xl border border-white/10 p-5">
+      <div class="mb-3 text-sm font-medium text-zinc-300">Subir .dem</div>
+      <div class="flex items-center gap-4">
+        <input id="demInput" name="demo_file" type="file" accept=".dem" required
+               class="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-white/10 file:px-3 file:py-2 file:text-white">
+        <button id="analyzeBtn" type="submit"
+                class="rounded-2xl bg-sky-500 px-5 py-2 text-sm font-medium text-white shadow-lg shadow-sky-500/20 hover:bg-sky-400">
+          Analizar .dem
+        </button>
       </div>
-      <div id="demInfo" class="text-xs text-slate-600 hidden"></div>
-      <button id="btnDem" class="bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg px-4 py-2">
-        Procesar .dem
-      </button>
-    </form>
-  </div>
+      <p class="mt-2 text-xs text-zinc-500">Tamaño típico 50–300 MB.</p>
+    </div>
+  </form>
+</section>
 
-  <!-- Subir CSVs -->
-  <div class="bg-white rounded-2xl shadow p-6">
-    <h2 class="text-lg font-semibold mb-2">Subir CSVs</h2>
-    <p class="text-sm text-slate-500 mb-4">O subí ambos <code>events.csv</code> y <code>rounds.csv</code>.</p>
-    <form id="formCsv" method="POST" enctype="multipart/form-data" class="space-y-4">
-      <label class="block">
-        <span class="text-sm text-slate-600">events.csv</span>
-        <input id="events_csv" type="file" name="events_csv" accept=".csv" class="mt-1 block w-full text-sm" required>
-      </label>
-      <label class="block">
-        <span class="text-sm text-slate-600">rounds.csv</span>
-        <input id="rounds_csv" type="file" name="rounds_csv" accept=".csv" class="mt-1 block w-full text-sm" required>
-      </label>
-      <div id="csvInfo" class="text-xs text-slate-600 hidden"></div>
-      <button id="btnCsv" class="bg-slate-800 hover:bg-slate-900 text-white rounded-lg px-4 py-2">
-        Procesar CSVs
-      </button>
-    </form>
+<!-- Overlay -->
+<div id="overlay" class="fixed inset-0 z-50 hidden place-items-center bg-black/70 backdrop-blur-sm">
+  <div class="w-[min(92vw,520px)] rounded-2xl bg-zinc-950 p-6 ring-1 ring-white/10">
+    <div class="mb-2 text-sm text-zinc-400">Analizando demo…</div>
+    <div class="mb-4 h-2 w-full overflow-hidden rounded-full bg-zinc-800">
+      <div id="bar" class="h-full bg-violet-500 transition-all" style="width:0%"></div>
+    </div>
+    <div id="step" class="text-sm text-zinc-300">Preparando…</div>
   </div>
 </div>
+{% endblock %}
 
+{% block scripts %}
 <script>
-  // Helpers
-  const prettySize = b => {
-    if (!Number.isFinite(b)) return "";
-    const mb = b / (1024*1024);
-    return ` (${mb.toFixed(1)} MB)`;
-  };
+(() => {
+  const form = document.getElementById('uploadForm');
+  const ov   = document.getElementById('overlay');
+  const bar  = document.getElementById('bar');
+  const st   = document.getElementById('step');
+  const dem  = document.getElementById('demInput');
+  const btn  = document.getElementById('analyzeBtn');
 
-  // Elementos
-  const dz = document.getElementById('drop');
-  const inputDem = document.getElementById('demo_file');
-  const demInfo = document.getElementById('demInfo');
-  const btnDem = document.getElementById('btnDem');
-
-  const formDem = document.getElementById('formDem');
-  const formCsv = document.getElementById('formCsv');
-  const inputEv = document.getElementById('events_csv');
-  const inputRd = document.getElementById('rounds_csv');
-  const csvInfo = document.getElementById('csvInfo');
-  const btnCsv = document.getElementById('btnCsv');
-
-  const overlay = document.getElementById('overlay');
-  const overlayTitle = document.getElementById('overlayTitle');
-  const overlaySub = document.getElementById('overlaySub');
-
-  // Drag & drop .dem
-  dz.addEventListener('click', () => inputDem.click());
-  dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('bg-slate-50'); });
-  dz.addEventListener('dragleave', () => dz.classList.remove('bg-slate-50'));
-  dz.addEventListener('drop', e => {
-    e.preventDefault(); dz.classList.remove('bg-slate-50');
-    if (e.dataTransfer.files.length) {
-      inputDem.files = e.dataTransfer.files;
-      inputDem.dispatchEvent(new Event('change'));
+  form.addEventListener('submit', (e) => {
+    // Validación mínima
+    if (!dem.files || !dem.files.length || !dem.files[0].name.toLowerCase().endsWith('.dem')) {
+      e.preventDefault();
+      alert('Elegí un archivo .dem válido');
+      return;
     }
-  });
 
-  // Mostrar nombre del .dem seleccionado
-  inputDem.addEventListener('change', () => {
-    if (inputDem.files.length) {
-      const f = inputDem.files[0];
-      demInfo.textContent = `Seleccionado: ${f.name}${prettySize(f.size)}`;
-      demInfo.classList.remove('hidden');
-    } else {
-      demInfo.classList.add('hidden');
-      demInfo.textContent = '';
-    }
-  });
+    // Mostrar overlay y empezar animación
+    ov.classList.remove('hidden');
+    bar.style.width = '0%';
+    st.textContent = 'Preparando…';
 
-  // Mostrar nombres de CSVs
-  function updateCsvInfo(){
-    const ev = inputEv.files[0]?.name || "—";
-    const rd = inputRd.files[0]?.name || "—";
-    const evs = inputEv.files[0]?.size, rds = inputRd.files[0]?.size;
-    csvInfo.textContent = `events: ${ev}${prettySize(evs)} · rounds: ${rd}${prettySize(rds)}`;
-    csvInfo.classList.remove('hidden');
-  }
-  inputEv.addEventListener('change', updateCsvInfo);
-  inputRd.addEventListener('change', updateCsvInfo);
+    // 🔑 Importante: NO deshabilitar el <input type="file"> antes de enviar
+    // Deshabilitamos solo el botón y (si querés) selects/inputs NO-file, y lo hacemos en el próximo tick
+    setTimeout(() => {
+      form.querySelectorAll('button, select, input:not([type="file"])').forEach(el => el.disabled = true);
+    }, 0);
 
-  // Al enviar .dem: mostrar overlay y deshabilitar botón
-  formDem.addEventListener('submit', () => {
-    const name = inputDem.files[0]?.name || "demo";
-    overlayTitle.textContent = `Procesando: ${name}`;
-    overlaySub.textContent = "Parseando demo → calculando KPIs → generando feedback…";
-    overlay.classList.remove('hidden');
-    overlay.classList.add('flex');
-    btnDem.disabled = true;
-    btnDem.classList.add('opacity-60', 'cursor-not-allowed');
-    btnDem.textContent = "Procesando…";
+    // Progreso visual
+    const steps = ["Subiendo archivo…","Parseando demo…","Indexando eventos…","Anotando zonas…","Calculando KPIs…","Generando feedback…"];
+    let progress = 0, stepIdx = 0, rafId = null, lastT = null;
+    const tick = (t) => {
+      if (lastT == null) lastT = t;
+      const dt = Math.min((t - lastT)/1000, 0.25); lastT = t;
+      const speed = progress < 70 ? 22 : (progress < 90 ? 8 : 2);
+      progress = Math.min(progress + speed * dt, 98);
+      bar.style.width = progress.toFixed(2) + '%';
+      tick._acc = (tick._acc || 0) + dt;
+      if (tick._acc > 0.6) { st.textContent = steps[stepIdx++ % steps.length]; tick._acc = 0; }
+      rafId = requestAnimationFrame(tick);
+    };
+    setTimeout(() => { rafId = requestAnimationFrame(tick); }, 50);
+    window.addEventListener('beforeunload', () => { if (rafId) cancelAnimationFrame(rafId); }, { once: true });
   });
-
-  // Al enviar CSVs: mostrar overlay y deshabilitar botón
-  formCsv.addEventListener('submit', () => {
-    overlayTitle.textContent = "Procesando CSVs…";
-    overlaySub.textContent = "Calculando KPIs → generando feedback…";
-    overlay.classList.remove('hidden');
-    overlay.classList.add('flex');
-    btnCsv.disabled = true;
-    btnCsv.classList.add('opacity-60', 'cursor-not-allowed');
-    btnCsv.textContent = "Procesando…";
-  });
+})();
 </script>
 {% endblock %}
+

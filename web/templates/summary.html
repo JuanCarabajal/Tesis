@@ -1,107 +1,181 @@
 {% extends "base.html" %}
+
+{# ------------------ Imports de componentes ------------------ #}
+{% from "components/score_badge.html"  import hero_score %}
+{% from "components/kpi_card.html"     import kpi_card %}
+{% from "components/quick_win.html"    import quick_win %}
+{% from "components/table_events.html" import table_events %}
+
+{# ------------------ Fallbacks / alias de datos ------------------ #}
+{% set S = (fb.summary if fb is defined and fb.summary else (fixtures.summaryMock if fixtures is defined else None)) %}
+{% set KPIS = (S.kpis if S and S.kpis is defined else []) %}
+{% set PP   = (S.postplant if S and S.postplant is defined else {'A':{'attempts':0,'winrate':0,'tsAliveEndAvg':0}, 'B':{'attempts':0,'winrate':0,'tsAliveEndAvg':0}}) %}
+{% set TOPZ = (S.topDeathZones if S and S.topDeathZones is defined else []) %}
+{% set QW   = (S.quickWins if S and S.quickWins is defined else []) %}
+{% set EV   = (fb.eventsSample if fb is defined and fb.eventsSample else (fixtures.eventsSample if fixtures is defined else [])) %}
+
 {% block content %}
-<div class="grid md:grid-cols-3 gap-4">
-  <!-- KPI: Entry & Trades -->
-  <div class="bg-white rounded-2xl shadow p-6">
-    <h3 class="font-semibold mb-4">Entry & Trades</h3>
-    <canvas id="chartTrades" width="220" height="220"></canvas>
-    <p class="text-sm mt-3 text-slate-500">Objetivo ≥ 70% trades ≤ 5s</p>
+
+<!-- Header centrado con Score protagonista -->
+<div class="mb-8 flex flex-col items-center text-center">
+  {{ hero_score(S.score10 if S and S.score10 is defined else 0, S.score100 if S and S.score100 is defined else 0) }}
+
+  <h1 class="mt-5 text-2xl font-semibold tracking-tight">
+    {{ S.matchId if S and S.matchId is defined else (match_id or 'mirage_demo') }}
+  </h1>
+
+  <div class="mt-1 text-sm text-zinc-400">
+    {{ (S.date ~ ' · ') if S and S.date else '' }}{{ (S.map|capitalize) if S and S.map else 'Mirage' }}
   </div>
 
-  <!-- KPI: Utilidad -->
-  <div class="bg-white rounded-2xl shadow p-6">
-    <h3 class="font-semibold mb-4">Utilidad</h3>
-    <canvas id="chartUtility" width="220" height="220"></canvas>
-    <p class="text-sm mt-3 text-slate-500">Objetivo ≈ 20 de daño por ronda</p>
+  <div class="mt-3">
+    <span class="rounded-full bg-sky-500/10 px-3 py-1 text-xs text-sky-300 ring-1 ring-sky-400/20">
+      Prototype · datos simulados
+    </span>
   </div>
 
-  <!-- KPI: Post-plant -->
-  <div class="bg-white rounded-2xl shadow p-6">
-    <h3 class="font-semibold mb-4">Post-plant</h3>
-    <canvas id="chartPostplant" width="220" height="220"></canvas>
-    <p class="text-sm mt-3 text-slate-500">Objetivo: pocas muertes tempranas</p>
+  <div class="mt-4 flex gap-3">
+    <a href="{{ url_for('rounds_root') if not match_id else url_for('rounds', match_id=match_id) }}"
+       class="rounded-xl border border-white/10 bg-zinc-900 px-3 py-1.5 text-sm text-zinc-200 hover:bg-zinc-800">
+      Ver rondas
+    </a>
+    <a href="{{ url_for('upload') }}"
+       class="rounded-xl bg-sky-500 px-3 py-1.5 text-sm text-white hover:bg-sky-400">
+      Subir otra demo
+    </a>
   </div>
 </div>
 
-<!-- Quick Wins -->
-<div class="mt-6 bg-white rounded-2xl shadow p-6">
-  <h2 class="text-lg font-semibold mb-3">Quick Wins</h2>
-  <ul class="grid md:grid-cols-3 gap-3">
-    {% for q in fb.summary.quick_wins %}
-    <li class="border rounded-xl p-4">
-      <div class="font-medium">{{ q.title }}</div>
-      <div class="text-xs text-slate-500 mt-1">Impacto: {{ (q.impact*100)|round(0) }}% · Esfuerzo: {{ q.effort }}</div>
-    </li>
-    {% endfor %}
-  </ul>
+<!-- KPIs -->
+<div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+  {% for k in KPIS %}
+    {{ kpi_card(
+        label = k.label if k.label is defined else ('KPI ' ~ loop.index),
+        weight = k.weight if k.weight is defined else 0,
+        value100 = k.value100 if k.value100 is defined else 0,
+        contribution = k.contribution if k.contribution is defined else 0,
+        evidence = k.evidence if k.evidence is defined else '',
+        limited = (k.evidence is string and ('limit' in k.evidence|lower))
+      )
+    }}
+  {% endfor %}
 </div>
 
-<!-- Hallazgos -->
-<div class="mt-6 bg-white rounded-2xl shadow p-6">
-  <h2 class="text-lg font-semibold mb-4">Hallazgos</h2>
-  <div class="space-y-3">
-    {% for f in fb.findings %}
-    <details class="border rounded-xl p-4">
-      <summary class="cursor-pointer font-medium">
-        {{ f.title }} <span class="text-xs text-slate-500">— {{ f.severity }}</span>
-      </summary>
-      <div class="mt-3 text-sm text-slate-700">
-        <p class="mb-2">{{ f.why_it_matters }}</p>
-        {% if f.metric_before %}
-        <p class="mb-1">
-          <span class="font-medium">Métrica:</span>
-          {% for k,v in f.metric_before.items() %} {{ k }}={{ v }} {% endfor %}
-          {% if f.target %}
-            <span class="text-slate-500">→ objetivo:</span>
-            {% for k,v in f.target.items() %} {{ k }}={{ v }} {% endfor %}
-          {% endif %}
-        </p>
-        {% endif %}
-        {% if f.evidence.rounds %}
-        <p class="mb-1"><span class="font-medium">Rondas:</span> {{ f.evidence.rounds|join(', ') }}</p>
-        {% endif %}
-        <p class="mt-2"><span class="font-medium">Recomendación:</span> {{ f.recommendation }}</p>
+<!-- Post-plant A/B + mini chart -->
+<div class="mt-6 grid gap-4 lg:grid-cols-3">
+  <div class="rounded-2xl bg-zinc-900/60 p-5 ring-1 ring-white/10">
+    <div class="text-sm font-medium text-zinc-200">Post-plant A</div>
+    <div class="mt-2 text-3xl font-semibold">
+      {{ ((PP.A.winrate * 100)|round(0)|int if PP.A.winrate is defined else 0) }}%
+    </div>
+    <div class="mt-1 text-sm text-zinc-400">
+      Intentos: {{ PP.A.attempts if PP.A.attempts is defined else 0 }}
+      · T vivos fin: {{ PP.A.tsAliveEndAvg if PP.A.tsAliveEndAvg is defined else '-' }}
+    </div>
+  </div>
+
+  <div class="rounded-2xl bg-zinc-900/60 p-5 ring-1 ring-white/10">
+    <div class="text-sm font-medium text-zinc-200">Post-plant B</div>
+    <div class="mt-2 text-3xl font-semibold">
+      {{ ((PP.B.winrate * 100)|round(0)|int if PP.B.winrate is defined else 0) }}%
+    </div>
+    <div class="mt-1 text-sm text-zinc-400">
+      Intentos: {{ PP.B.attempts if PP.B.attempts is defined else 0 }}
+      · T vivos fin: {{ PP.B.tsAliveEndAvg if PP.B.tsAliveEndAvg is defined else '-' }}
+    </div>
+  </div>
+
+  <div class="rounded-2xl bg-zinc-900/60 p-5 ring-1 ring-white/10">
+    <div class="mb-3 text-sm font-medium text-zinc-200">Post-plant (mini)</div>
+    <canvas id="ppMini" height="120"></canvas>
+  </div>
+</div>
+
+<!-- Top zonas + Quick wins -->
+<div class="mt-6 grid gap-4 lg:grid-cols-3">
+  <div class="rounded-2xl bg-zinc-900/60 p-5 ring-1 ring-white/10 lg:col-span-2">
+    <div class="mb-3 flex items-center justify-between">
+      <div class="text-sm font-medium text-zinc-200">Top zonas de muertes</div>
+      <!-- Chips top-3 -->
+      <div class="hidden gap-2 md:flex">
+        {% for z in TOPZ[:3] %}
+          <span class="rounded-full bg-white/5 px-2 py-0.5 text-xs text-zinc-300 ring-1 ring-white/10">
+            {{ z.zone }} · {{ ((z.pct*100)|round(0)|int if z.pct is defined else 0) }}%
+          </span>
+        {% endfor %}
       </div>
-    </details>
-    {% endfor %}
+    </div>
+    <canvas id="topZones" height="180"></canvas>
+  </div>
+
+  <div class="space-y-3">
+    {% if QW and QW|length > 0 %}
+      {% for q in QW %}
+        {{ quick_win(q) }}
+      {% endfor %}
+    {% else %}
+      <div class="rounded-2xl bg-zinc-900/60 p-5 text-sm text-zinc-400 ring-1 ring-white/10">Sin quick wins.</div>
+    {% endif %}
   </div>
 </div>
 
-<!-- Datos como JSON embebido (evita conflictos de variables JS) -->
-<script id="fb-data" type="application/json">
-  {{ fb | tojson }}
-</script>
+<!-- Tabla de eventos (muestra) -->
+<div class="mt-6 rounded-2xl bg-zinc-900/60 p-5 ring-1 ring-white/10">
+  <div class="mb-3 text-sm font-medium text-zinc-200">Eventos (muestra)</div>
+  {{ table_events(EV if EV else []) }}
+</div>
 
+{% endblock %}
+
+{% block scripts %}
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-  const data = JSON.parse(document.getElementById('fb-data').textContent);
+(() => {
+  // Datos para los gráficos desde el template
+  const PP = {{ PP | tojson | safe }};
+  const TOPZ = {{ TOPZ | tojson | safe }};
 
-  const safeNum = v => {
-    const n = Number(v);
-    return Number.isFinite(n) ? n : 0;
-  };
+  // Post-plant mini bar
+  try {
+    const ctx = document.getElementById('ppMini');
+    if (ctx && PP && PP.A && PP.B) {
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['A', 'B'],
+          datasets: [{
+            label: 'Win rate',
+            data: [
+              Math.round((PP.A.winrate || 0) * 100),
+              Math.round((PP.B.winrate || 0) * 100)
+            ]
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { display: false } },
+          scales: { y: { min: 0, max: 100, ticks: { callback: v => v + '%' } } }
+        }
+      });
+    }
+  } catch(e) { console.warn('ppMini chart error', e); }
 
-  const scoreTrades  = safeNum(data?.summary?.scores?.entry_trades);
-  const scoreUtility = safeNum(data?.summary?.scores?.utility);
-  const scorePost    = safeNum(data?.summary?.scores?.postplant);
-
-  function donut(id, value){
-    const el = document.getElementById(id);
-    if (!el) return;
-    const ctx = el.getContext('2d');
-    new Chart(ctx, {
-      type: 'doughnut',
-      data: {
-        labels: ['Score','Pendiente'],
-        datasets: [{ data: [value, Math.max(0, 100 - value)], borderWidth: 0 }]
-      },
-      options: { cutout: '70%', plugins: { legend: { display:false }, tooltip:{ enabled:false } } }
-    });
-  }
-
-  donut('chartTrades',  scoreTrades);
-  donut('chartUtility', scoreUtility);
-  donut('chartPostplant', scorePost);
-});
+  // Top zonas bar
+  try {
+    const tctx = document.getElementById('topZones');
+    if (tctx && Array.isArray(TOPZ)) {
+      const labels = TOPZ.map(z => z.zone || '');
+      const values = TOPZ.map(z => Math.round((z.pct || 0) * 100));
+      new Chart(tctx, {
+        type: 'bar',
+        data: { labels, datasets: [{ label: '% muertes', data: values }] },
+        options: {
+          responsive: true,
+          plugins: { legend: { display: false } },
+          scales: { y: { min: 0, max: Math.max(100, Math.ceil(Math.max(...values, 0)/5)*5) } }
+        }
+      });
+    }
+  } catch(e) { console.warn('topZones chart error', e); }
+})();
 </script>
 {% endblock %}

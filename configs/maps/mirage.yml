@@ -5,51 +5,164 @@ z_layers:
     z_max:  9999
 
 zones:
-  - id: "A Ramp"
+  # ===== A SITE (sub-zonas primero) =====
+  - id: "Sandwich"     # sub-spot en A
+    key: "a_sandwich"
+    site: "A"
     layer: "ground"
-    polygon: [[-1700,600],[-1300,600],[-1300,1100],[-1700,1100]]
-  - id: "Palace"
+    polygon: [[-740,560],[-660,560],[-660,620],[-740,620]]
+
+  - id: "Triple"
+    key: "a_triple"
+    site: "A"
     layer: "ground"
-    polygon: [[-1300,900],[-900,900],[-900,1300],[-1300,1300]]
-  - id: "A Site"
+    polygon: [[-900,540],[-820,540],[-820,660],[-900,660]]
+
+  - id: "Default A"
+    key: "a_default"
+    site: "A"
     layer: "ground"
-    polygon: [[-1000,300],[-200,300],[-200,900],[-1000,900]]
+    polygon: [[-800,500],[-600,500],[-600,700],[-800,700]]
+
+  - id: "Tetris"
+    key: "a_tetris"
+    site: "A"
+    layer: "ground"
+    polygon: [[-800,700],[-720,700],[-720,820],[-800,820]]
+
   - id: "Stairs"
+    key: "a_stairs"
+    site: "A"
     layer: "ground"
     polygon: [[-500,900],[-200,900],[-200,1200],[-500,1200]]
+
   - id: "Jungle"
+    key: "a_jungle"
+    site: "A"
     layer: "ground"
     polygon: [[-300,600],[100,600],[100,900],[-300,900]]
-  - id: "Ticket"
+
+  - id: "CT / Ticket"
+    key: "a_ct_ticket"
+    site: "A"
     layer: "ground"
     polygon: [[-300,300],[100,300],[100,600],[-300,600]]
-  - id: "Conector"
+
+  - id: "Palace"
+    key: "a_palace"
+    site: "A"
     layer: "ground"
-    polygon: [[-900,500],[-600,500],[-600,800],[-900,800]]
-  - id: "Mid"
+    polygon: [[-1300,900],[-900,900],[-900,1300],[-1300,1300]]
+
+  - id: "A Ramp"
+    key: "a_ramp"
+    site: "A"
     layer: "ground"
-    polygon: [[-1400,0],[-600,0],[-600,500],[-1400,500]]
+    polygon: [[-1700,600],[-1300,600],[-1300,1100],[-1700,1100]]
+
+  - id: "A Site"       # zona grande (queda al final para no pisar sub-zonas)
+    key: "a_site"
+    site: "A"
+    layer: "ground"
+    polygon: [[-1000,300],[-200,300],[-200,900],[-1000,900]]
+
+  # ===== MID =====
+  - id: "Ladder Room"
+    key: "mid_ladder"
+    site: "MID"
+    layer: "ground"
+    polygon: [[-600,100],[-500,100],[-500,200],[-600,200]]
+
   - id: "Window"
+    key: "mid_window"
+    site: "MID"
     layer: "ground"
     polygon: [[-900,-100],[-600,-100],[-600,100],[-900,100]]
+
+  - id: "Connector"     # mantengo inglés; alias abajo cubre "Conector"
+    key: "mid_connector"
+    site: "MID"
+    layer: "ground"
+    polygon: [[-900,500],[-600,500],[-600,800],[-900,800]]
+
   - id: "Catwalk"
+    key: "mid_catwalk"
+    site: "MID"
     layer: "ground"
     polygon: [[-600,-100],[-300,-100],[-300,200],[-600,200]]
+
   - id: "Short"
+    key: "mid_short"
+    site: "MID"
     layer: "ground"
     polygon: [[-300,200],[0,200],[0,600],[-300,600]]
-  - id: "B Apps"
+
+  - id: "Top Mid"
+    key: "mid_top"
+    site: "MID"
     layer: "ground"
-    polygon: [[-300,600],[300,600],[300,1100],[-300,1100]]
-  - id: "B Site"
-    layer: "ground"
-    polygon: [[0,800],[600,800],[600,1200],[0,1200]]
-  - id: "Market"
-    layer: "ground"
-    polygon: [[600,700],[900,700],[900,1100],[600,1100]]
-  - id: "Under"
+    polygon: [[-1200,500],[-800,500],[-800,700],[-1200,700]]
+
+  - id: "Underpass"
+    key: "mid_underpass"
+    site: "MID"
     layer: "ground"
     polygon: [[-1100,200],[-900,200],[-900,400],[-1100,400]]
+
+  - id: "Mid"
+    key: "mid_core"
+    site: "MID"
+    layer: "ground"
+    polygon: [[-1400,0],[-600,0],[-600,500],[-1400,500]]
+
+  # ===== B SITE =====
+  - id: "Van"
+    key: "b_van"
+    site: "B"
+    layer: "ground"
+    polygon: [[ 240,900],[320,900],[320,980],[240,980]]
+
+  - id: "Bench"
+    key: "b_bench"
+    site: "B"
+    layer: "ground"
+    polygon: [[100,1000],[180,1000],[180,1080],[100,1080]]
+
+  - id: "Default B"
+    key: "b_default"
+    site: "B"
+    layer: "ground"
+    polygon: [[300,950],[400,950],[400,1040],[300,1040]]
+
+  - id: "Pillars"
+    key: "b_pillars"
+    site: "B"
+    layer: "ground"
+    polygon: [[360,880],[460,880],[460,1000],[360,1000]]
+
+  - id: "Kitchen"
+    key: "b_kitchen"
+    site: "B"
+    layer: "ground"
+    polygon: [[500,700],[580,700],[580,900],[500,900]]
+
+  - id: "Market"
+    key: "b_market"
+    site: "B"
+    layer: "ground"
+    polygon: [[600,700],[900,700],[900,1100],[600,1100]]
+
+  - id: "B Apps"
+    key: "b_apps"
+    site: "B"
+    layer: "ground"
+    polygon: [[-300,600],[300,600],[300,1100],[-300,1100]]
+
+  - id: "B Site"        # zona grande (al final)
+    key: "b_site"
+    site: "B"
+    layer: "ground"
+    polygon: [[0,800],[600,800],[600,1200],[0,1200]]
 
 plant_sites:
   - id: "A"
@@ -63,3 +176,8 @@ aliases:
   Mid: ["Middle", "Mid"]
   "A Site": ["A", "Site A"]
   "B Site": ["B", "Site B"]
+  Connector: ["Conector", "Con"]
+  Underpass: ["Under"]
+  "CT / Ticket": ["CT", "Ticket", "CT/Ticket"]
+  Catwalk: ["Cat", "Short Cat"]
+  Short: ["Short B", "B Short"]

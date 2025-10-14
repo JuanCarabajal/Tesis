@@ -1,0 +1,30 @@
+# --- Python / Flask ---
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+instance/
+.env
+.env.*
+
+# Virtual env
+.venv/
+venv/
+ENV/
+
+# Logs / tmp
+*.log
+*.tmp
+*.swp
+.DS_Store
+
+# Build / outputs de tu app
+out/
+uploads/
+demos/*.dem
+
+# Node (por si tenés front)
+node_modules/
+dist/
+.build/

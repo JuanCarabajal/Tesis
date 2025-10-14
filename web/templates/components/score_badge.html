@@ -1,0 +1,43 @@
+{% macro hero_score(score10, score100) -%}
+{% set s10 = ('%.1f'|format(score10 if score10 is not none else 0)) %}
+{% set c = 'amber' %}
+{% if score10 is not none %}
+  {% if score10 < 4 %}{% set c = 'rose' %}
+  {% elif score10 > 7 %}{% set c = 'emerald' %}{% endif %}
+{% endif %}
+
+{% set halo = {
+  'rose':   'rgba(244,63,94,0.30), rgba(244,63,94,0.10)',
+  'amber':  'rgba(245,158,11,0.30), rgba(245,158,11,0.10)',
+  'emerald':'rgba(16,185,129,0.28), rgba(16,185,129,0.10)'
+}[c] %}
+{% set ring = {
+  'rose':'ring-rose-400/30',
+  'amber':'ring-amber-400/30',
+  'emerald':'ring-emerald-400/30'
+}[c] %}
+{% set bar = {
+  'rose':'bg-rose-400',
+  'amber':'bg-amber-400',
+  'emerald':'bg-emerald-400'
+}[c] %}
+
+<div class="relative login-bg">
+
+  <div class="pointer-events-none absolute inset-0 -z-10 blur-3xl opacity-50"
+       style="background: radial-gradient(60% 60% at 50% 50%, {{ halo }}, transparent)"></div>
+
+  <div class="grid place-items-center rounded-full bg-zinc-900/70 {{ ring }} shadow-[0_0_60px_rgba(255,255,255,0.04)]"
+       style="width: 168px; height: 168px;">
+    <div class="text-5xl font-bold leading-none tracking-tight">{{ s10 }}</div>
+    <div class="mt-1 text-[11px] uppercase tracking-wider text-zinc-400">Score</div>
+  </div>
+
+  <div class="mt-3 w-full">
+    <div class="h-1.5 w-[168px] overflow-hidden rounded-full bg-zinc-800">
+      <div class="h-full {{ bar }}" style="width: {{ (score100 or 0)|int }}%"></div>
+    </div>
+    <div class="mt-1 text-center text-[11px] text-zinc-400">Interno: {{ (score100 or 0)|int }}/100</div>
+  </div>
+</div>
+{%- endmacro %}
