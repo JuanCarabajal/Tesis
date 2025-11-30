@@ -1,21 +1,21 @@
 {% extends "base.html" %}
 
 {% block content %}
-<section class="rounded-2xl border border-white/10 bg-gradient-to-b from-zinc-950 to-zinc-900 p-10">
-  <div class="mb-6 flex items-center justify-between">
+<section class="rounded-2xl border border-white/10 bg-gradient-to-b from-zinc-950 to-zinc-900 p-6 md:p-10">
+  <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
     <div>
-      <h1 class="text-2xl font-semibold">Subí tu demo de Mirage</h1>
-      <p class="mt-1 text-sm text-zinc-400">Seleccioná un archivo <code>.dem</code> para analizar.</p>
+      <h1 class="text-2xl font-semibold">Sube tu demo de Mirage</h1>
+      <p class="mt-1 text-sm text-zinc-400">Selecciona un archivo <code>.dem</code> para analizar.</p>
     </div>
-    <span class="rounded-full bg-sky-500/10 px-3 py-1 text-xs text-sky-300 ring-1 ring-sky-400/20">
-      Tesis MVP • Mirage
+    <span class="rounded-full bg-sky-500/10 px-3 py-1 text-xs text-sky-300 ring-1 ring-sky-400/20 self-start md:self-auto">
+      Tesis MVP � Mirage
     </span>
   </div>
 
   <form id="uploadForm" method="POST" action="{{ url_for('upload') }}" enctype="multipart/form-data" class="grid gap-6">
-    <div class="rounded-2xl border border-white/10 p-5">
-      <div class="mb-3 text-sm font-medium text-zinc-300">Subir .dem</div>
-      <div class="flex items-center gap-4">
+    <div class="rounded-2xl border border-white/10 p-5 space-y-3">
+      <div class="text-sm font-medium text-zinc-300">Subir .dem</div>
+      <div class="flex flex-col sm:flex-row sm:items-center gap-3">
         <input id="demInput" name="demo_file" type="file" accept=".dem" required
                class="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-white/10 file:px-3 file:py-2 file:text-white">
         <button id="analyzeBtn" type="submit"
@@ -23,7 +23,7 @@
           Analizar .dem
         </button>
       </div>
-      <p class="mt-2 text-xs text-zinc-500">Tamaño típico 50–300 MB.</p>
+      <p class="mt-1 text-xs text-zinc-500">Tama�o t�pico 50�300 MB.</p>
     </div>
   </form>
 </section>
@@ -31,61 +31,11 @@
 <!-- Overlay -->
 <div id="overlay" class="fixed inset-0 z-50 hidden place-items-center bg-black/70 backdrop-blur-sm">
   <div class="w-[min(92vw,520px)] rounded-2xl bg-zinc-950 p-6 ring-1 ring-white/10">
-    <div class="mb-2 text-sm text-zinc-400">Analizando demo…</div>
+    <div class="mb-2 text-sm text-zinc-400">Analizando demo�</div>
     <div class="mb-4 h-2 w-full overflow-hidden rounded-full bg-zinc-800">
       <div id="bar" class="h-full bg-violet-500 transition-all" style="width:0%"></div>
     </div>
-    <div id="step" class="text-sm text-zinc-300">Preparando…</div>
+    <div id="step" class="text-sm text-zinc-300">Preparando�</div>
   </div>
 </div>
 {% endblock %}
-
-{% block scripts %}
-<script>
-(() => {
-  const form = document.getElementById('uploadForm');
-  const ov   = document.getElementById('overlay');
-  const bar  = document.getElementById('bar');
-  const st   = document.getElementById('step');
-  const dem  = document.getElementById('demInput');
-  const btn  = document.getElementById('analyzeBtn');
-
-  form.addEventListener('submit', (e) => {
-    // Validación mínima
-    if (!dem.files || !dem.files.length || !dem.files[0].name.toLowerCase().endsWith('.dem')) {
-      e.preventDefault();
-      alert('Elegí un archivo .dem válido');
-      return;
-    }
-
-    // Mostrar overlay y empezar animación
-    ov.classList.remove('hidden');
-    bar.style.width = '0%';
-    st.textContent = 'Preparando…';
-
-    // 🔑 Importante: NO deshabilitar el <input type="file"> antes de enviar
-    // Deshabilitamos solo el botón y (si querés) selects/inputs NO-file, y lo hacemos en el próximo tick
-    setTimeout(() => {
-      form.querySelectorAll('button, select, input:not([type="file"])').forEach(el => el.disabled = true);
-    }, 0);
-
-    // Progreso visual
-    const steps = ["Subiendo archivo…","Parseando demo…","Indexando eventos…","Anotando zonas…","Calculando KPIs…","Generando feedback…"];
-    let progress = 0, stepIdx = 0, rafId = null, lastT = null;
-    const tick = (t) => {
-      if (lastT == null) lastT = t;
-      const dt = Math.min((t - lastT)/1000, 0.25); lastT = t;
-      const speed = progress < 70 ? 22 : (progress < 90 ? 8 : 2);
-      progress = Math.min(progress + speed * dt, 98);
-      bar.style.width = progress.toFixed(2) + '%';
-      tick._acc = (tick._acc || 0) + dt;
-      if (tick._acc > 0.6) { st.textContent = steps[stepIdx++ % steps.length]; tick._acc = 0; }
-      rafId = requestAnimationFrame(tick);
-    };
-    setTimeout(() => { rafId = requestAnimationFrame(tick); }, 50);
-    window.addEventListener('beforeunload', () => { if (rafId) cancelAnimationFrame(rafId); }, { once: true });
-  });
-})();
-</script>
-{% endblock %}
-

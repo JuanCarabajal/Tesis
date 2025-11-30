@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-6xl mx-auto px-6 py-10 space-y-10">
+
+  <header class="space-y-2 text-center">
+    <p class="text-xs uppercase tracking-[0.25em] text-emerald-300/80">FAQ</p>
+    <h1 class="text-3xl md:text-4xl font-bold text-white">Preguntas frecuentes</h1>
+    <p class="text-slate-300 max-w-3xl mx-auto text-sm md:text-base">
+      Resumen rapido de seguridad, alcance y roadmap. Si no encontrás tu respuesta, escribinos y te ayudamos.
+    </p>
+  </header>
+
+  <section class="grid gap-4 md:grid-cols-2">
+    {% for q,a in [
+      ['Mis demos se suben a la nube?', 'Si. Se procesan en la nube de Sharpix con acceso cifrado y uso exclusivo para feedback.'],
+      ['Soporta mapas ademas de Mirage?', 'Hoy es Mirage; Inferno y Nuke estan en el roadmap inmediato.'],
+      ['Necesito una cuenta de pago?', 'No. El plan Free permite 3 demos al mes; Pro habilita ilimitadas y comparativas por rol.'],
+      ['Puedo exportar y compartir?', 'Si, con Exportar PDF desde el resumen para compartir con tu equipo.'],
+      ['Hay vista por rondas?', 'Si, podes ver resumen general y una vista de rondas para contexto rapido.'],
+      ['Como protegen mis credenciales?', 'Login propio por email y password; no pedimos Steam/Faceit, ni subimos tus archivos.']
+    ] %}
+    <div class="p-5 rounded-2xl border border-emerald-300/35 bg-gradient-to-br from-emerald-500/10 to-sky-500/10 backdrop-blur-md shadow-md shadow-emerald-500/10">
+      <p class="font-semibold text-white">{{ q }}</p>
+      <p class="text-sm text-slate-200/90 mt-1 leading-relaxed">{{ a }}</p>
+    </div>
+    {% endfor %}
+  </section>
+
+  <section class="rounded-2xl border border-white/10 bg-white/5 p-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+    <div>
+      <p class="text-xs uppercase tracking-[0.25em] text-emerald-300/80">Contacto</p>
+      <h2 class="text-xl font-semibold text-white">¿Tu duda no está aquí?</h2>
+      <p class="text-sm text-slate-300">Escribinos y nuestro equipo te responde en menos de 24 hs.</p>
+    </div>
+    <a href="mailto:soporte@sharpix.com.ar" class="inline-flex items-center gap-2 rounded-xl bg-emerald-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-emerald-500/25 hover:bg-emerald-600">
+      soporte@sharpix.com.ar
+    </a>
+  </section>
+
+</div>
+{% endblock %}
+
+

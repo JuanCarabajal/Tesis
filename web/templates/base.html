@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>{% block title %}CS2 Feedback · Mirage{% endblock %}</title>
+  <title>{% block title %}CS2 Feedback Mirage{% endblock %}</title>
 
   <!-- Tailwind (CDN) -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -16,18 +16,28 @@
   <!-- Chart.js (CDN) -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-  /* tamaño gigante y fluido para el brand */
-  .brand-xxl { font-size: clamp(48px, 8vw, 112px); line-height: .95; letter-spacing: -0.02em; }
-  .text-gradient { background: linear-gradient(90deg,#38bdf8,#a78bfa,#f472b6); -webkit-background-clip:text; background-clip:text; color: transparent; }
-  .glow-soft { text-shadow: 0 6px 40px rgba(56,189,248,.25); }
-</style>
-
+    /* tamanio gigante y fluido para el brand */
+    .brand-xxl { font-size: clamp(48px, 8vw, 112px); line-height: .95; letter-spacing: -0.02em; }
+    .text-gradient { background: linear-gradient(90deg,#38bdf8,#a78bfa,#f472b6); -webkit-background-clip:text; background-clip:text; color: transparent; }
+    .glow-soft { text-shadow: 0 6px 40px rgba(56,189,248,.25); }
+  </style>
 
   {% block head %}{% endblock %}
 </head>
 <body class="bg-zinc-950 text-white">
   <!-- Navbar -->
   {% include "partials/_navbar.html" %}
+  <!-- BG: mesh gradients -->
+  <div aria-hidden="true"
+      class="pointer-events-none fixed inset-0 -z-50
+              bg-[radial-gradient(60%_40%_at_15%_20%,rgba(16,185,129,.16),transparent),radial-gradient(55%_45%_at_85%_25%,rgba(56,189,248,.14),transparent),radial-gradient(50%_60%_at_50%_80%,rgba(79,70,229,.12),transparent)]">
+  </div>
+
+  <!-- BG: noise overlay (muy sutil) -->
+  <div aria-hidden="true"
+      class="pointer-events-none fixed inset-0 -z-40 opacity-[.06] mix-blend-soft-light"
+      style="background-image:url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2280%22 viewBox=%220 0 80 80%22><filter id=%22n%22><feTurbulence type=%22fractalNoise%22 baseFrequency=%220.9%22 numOctaves=%222%22 stitchTiles=%22stitch%22/></filter><rect width=%2280%22 height=%2280%22 filter=%22url(%23n)%22 opacity=%220.35%22/></svg>');">
+  </div>
 
   <main class="mx-auto max-w-7xl p-6">
     <!-- Flash messages -->
@@ -35,7 +45,7 @@
       {% if msgs %}
         <div class="mb-4 space-y-2">
           {% for m in msgs %}
-            <div class="rounded-xl border border-rose-400/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
+            <div class="rounded-xl border border-emerald-400/25 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-100">
               {{ m | safe }}
             </div>
           {% endfor %}
@@ -46,11 +56,11 @@
     {% block content %}{% endblock %}
   </main>
 
-  <footer class="mt-10 border-t border-white/10 py-6 text-center text-xs text-zinc-500">
-    Prototype — datos simulados. Inspiración visual tipo PureSkill.
+  <footer class="mt-12 text-center text-sm text-slate-400 py-6 border-t border-white/10">
+    <span class="font-semibold text-white">Sharpix</span> - Tecnologia y tactica para potenciar tu juego.
   </footer>
 
-  <!-- Inyección opcional de fixtures -->
+  <!-- Inyeccion opcional de fixtures -->
   <script>
     window.__MOCK = {{ fixtures|tojson|safe if fixtures is defined else 'null' }};
   </script>

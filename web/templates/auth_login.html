@@ -1,227 +1,191 @@
 {% extends "base.html" %}
-{% block title %}{{ 'Crear cuenta' if mode=='register' else 'Ingresar' }} · Sharpix{% endblock %}
+{% block title %}{{ 'Crear cuenta' if mode=='register' else 'Ingresar' }} - Sharpix{% endblock %}
 
 {% block head %}
 <style>
-  /* Fondo claro con gradiente + spotlight + viñeta */
-  .login-bg::before{
+  body.auth-page main { max-width: 100%; padding: 0; }
+  .auth-shell {
+    position: relative;
+    min-height: 100vh;
+    background: linear-gradient(145deg, #0b0e18 0%, #0f172a 55%, #0b0e18 100%);
+    overflow: hidden;
+  }
+  .auth-shell::before {
     content:"";
-    position:fixed; inset:0; z-index:-1;
+    position:absolute; inset:0; z-index:0;
     background:
-      radial-gradient(80% 60% at 40% 38%, rgba(255,255,255,.55) 0%, rgba(255,255,255,.10) 40%, rgba(30,42,82,0) 100%),
-      linear-gradient(145deg, #f7f8fa 0%, #d5d9ff 20%, #7ac4ff 55%, #1e2a52 100%);
-    background-attachment: fixed;
-    animation: breathe 20s ease-in-out infinite alternate;
+      radial-gradient(60% 50% at 20% 20%, rgba(16,185,129,0.12), transparent),
+      radial-gradient(55% 50% at 80% 15%, rgba(56,189,248,0.12), transparent),
+      radial-gradient(45% 55% at 50% 85%, rgba(79,70,229,0.10), transparent);
+    pointer-events: none;
   }
-  .login-bg::after{
+  .auth-shell::after {
     content:"";
-    position:fixed; inset:0; z-index:-1; pointer-events:none;
-    background:
-      radial-gradient(100% 80% at 50% 15%, rgba(0,0,0,0) 40%, rgba(6,10,18,.20) 100%),
-      radial-gradient(60% 50% at 25% 70%, rgba(6,10,18,.22) 0%, rgba(6,10,18,0) 70%),
-      radial-gradient(70% 60% at 90% 80%, rgba(255,255,255,.12) 0%, rgba(255,255,255,0) 70%);
+    position:absolute; inset:0; z-index:0;
+    opacity:.05; pointer-events:none;
+    background-image:url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2280%22 viewBox=%220 0 80 80%22><filter id=%22n%22><feTurbulence type=%22fractalNoise%22 baseFrequency=%220.9%22 numOctaves=%222%22 stitchTiles=%22stitch%22/></filter><rect width=%2280%22 height=%2280%22 filter=%22url(%23n)%22 opacity=%220.35%22/></svg>');
   }
-  @keyframes breathe { 0%,100% { filter:brightness(1) } 50% { filter:brightness(1.05) } }
-
-  /* Logo: pulso + punch sutil */
-  @keyframes pulse-glow {
-    0%,100% { opacity:.9; filter: drop-shadow(0 0 18px rgba(56,189,248,.25)); }
-    50%     { opacity:1;  filter: drop-shadow(0 0 42px rgba(56,189,248,.48)); }
-  }
-  .logo-hero{
-    width: clamp(260px, 40vw, 640px);
-    height: auto;
-    animation: pulse-glow 6s ease-in-out infinite;
-    transition: transform .25s ease;
-    filter: drop-shadow(0 4px 16px rgba(56,189,248,.25)) saturate(1.08);
-  }
-  .logo-hero:hover{ transform: scale(1.03); }
-
-  /* Halo animado multicolor detrás del logo */
-  @keyframes rotate-halo {
-    0%   { transform: rotate(0deg) scale(1); opacity:.85; }
-    50%  { transform: rotate(180deg) scale(1.05); opacity:1; }
-    100% { transform: rotate(360deg) scale(1); opacity:.85; }
-  }
-  .logo-halo{
-    position:absolute; inset:-15% -18%;
-    z-index:-1; border-radius:9999px;
-    background:
-      radial-gradient(60% 60% at 45% 50%, rgba(56,189,248,.55) 0%, rgba(56,189,248,0) 65%),
-      radial-gradient(50% 50% at 65% 55%, rgba(167,139,250,.45) 0%, rgba(167,139,250,0) 70%);
-    filter: blur(40px);
-    animation: rotate-halo 16s linear infinite;
-  }
-
-  /* Kicker “Bienvenido a” */
-  .kicker{
-    display:inline-block;
-    padding: .35rem .65rem;
-    border-radius: 9999px;
-    font-weight: 700;
-    font-size: 1rem;
-    letter-spacing: .04em;
-    color: #0f172a;
-    background: linear-gradient(90deg, rgba(56,189,248,.20), rgba(167,139,250,.20));
-    box-shadow: inset 0 0 0 1px rgba(255,255,255,.55), 0 6px 24px rgba(15,23,42,.08);
-    backdrop-filter: blur(4px);
-  }
-
-  /* Animaciones de aparición */
-  @keyframes fade-up {
-    from { opacity: 0; transform: translateY(8px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  .fade-up{ animation: fade-up .7s ease forwards; }
-  .fade-up.delay-1{ animation-delay: .08s; }
-  .fade-up.delay-2{ animation-delay: .16s; }
-
-  /* Card del form (glass/relieve) */
-  .glass{
-    background: rgba(24,24,27,.65);
-    -webkit-backdrop-filter: blur(10px);
-    backdrop-filter: blur(10px);
-  }
-  .ring-soft{
-    box-shadow:
-      0 0 0 1px rgba(255,255,255,.10) inset,
-      0 10px 30px rgba(2,6,12,.25);
-  }
-
-  /* Botones soft (por si aparecen en otros estados) */
-  button, a.bg-sky-500{
+  .auth-content { position: relative; z-index: 1; }
+  .hero-panel, .form-card { position: relative; z-index: 2; }
+  /* mostrar flashes en esta vista */
+  body.auth-page .mb-4.space-y-2 { display: block; }
+  .auth-flash {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 12px;
     border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(56,189,248,.25);
+    border: 1px solid rgba(248,113,113,0.3);
+    background: rgba(127,29,29,0.2);
+    color: #fecdd3;
+    font-size: 0.9rem;
   }
-  button:hover, a.bg-sky-500:hover{
-    filter: brightness(1.1);
-    box-shadow: 0 4px 20px rgba(56,189,248,.35);
+  .hero-panel {
+    background:
+      linear-gradient(135deg, rgba(16,185,129,0.15), rgba(59,130,246,0.08)),
+      radial-gradient(circle at 30% 30%, rgba(56,189,248,0.08), transparent 45%),
+      #0d161f;
+    border: 1px solid rgba(255,255,255,0.05);
+    box-shadow: 0 30px 70px rgba(0,0,0,0.35);
+    border-radius: 28px;
+    position: relative;
+    overflow: hidden;
   }
-
-  @media (prefers-reduced-motion: reduce){
-    .login-bg::before{ animation:none; }
-    .logo-hero{ animation:none; }
-    .logo-halo{ animation:none; }
-    .fade-up, .fade-up.delay-1, .fade-up.delay-2{ animation:none; }
+  .hero-panel::after {
+    content:"";
+    position:absolute; inset:0;
+    background-image:
+      linear-gradient(0deg, transparent 95%, rgba(255,255,255,0.05) 96%),
+      linear-gradient(90deg, transparent 95%, rgba(255,255,255,0.05) 96%);
+    background-size: 32px 32px;
+    opacity: .4;
+    pointer-events: none;
+  }
+  .form-card {
+    background: linear-gradient(180deg, rgba(24,24,27,0.9), rgba(17,24,39,0.85));
+    border: 1px solid rgba(255,255,255,0.06);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+    border-radius: 20px;
   }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="relative login-bg">
+<div class="auth-shell flex items-center justify-center px-4 py-12 relative">
+  <div class="auth-content grid w-full max-w-6xl gap-8 lg:grid-cols-[1.1fr,1fr]">
 
-  <!-- halos decorativos sutiles -->
-  <div class="pointer-events-none absolute inset-0 -z-10">
-    <div class="absolute -top-20 -left-10 h-56 w-56 rounded-full bg-sky-500/15 blur-3xl"></div>
-    <div class="absolute top-32 -right-10 h-64 w-64 rounded-full bg-violet-500/15 blur-3xl"></div>
-  </div>
-
-  <div class="mx-auto grid max-w-7xl grid-cols-1 items-center gap-10 px-4 py-16 lg:grid-cols-2 lg:py-24">
-    <!-- LEFT: hero -->
-    <section class="order-2 lg:order-1">
-      <div class="mb-3 flex items-center gap-2 text-xs text-zinc-600">
-        <img src="{{ url_for('static', filename='brand/mark.png') }}" alt="Sharpix" class="h-4 w-4 opacity-80">
-        <span>CS2 Feedback · Mirage</span>
-      </div>
-
-      <!-- Kicker + logo -->
-      <div class="kicker fade-up">Bienvenido a</div>
-      <div class="relative inline-block mb-2 fade-up delay-1">
-        <div class="logo-halo"></div>
-        <img src="{{ url_for('static', filename='brand/logo.png') }}"
-             alt="Sharpix"
-             class="logo-hero mt-1 select-none" draggable="false">
-      </div>
-
-      <!-- Copy aspiracional (sin botones) -->
-      <div class="mt-4 max-w-xl text-zinc-800/90 fade-up delay-2">
-        <p class="text-lg leading-relaxed mb-4">
-          <strong>Subí tus partidas</strong> y descubrí <strong>qué te separa de tu mejor versión.</strong><br>
-          Desde el <strong>posicionamiento</strong> hasta la <strong>toma de decisiones</strong>,
-          <span class="text-sky-600 font-semibold">Sharpix</span> convierte tus partidas en
-          <strong>entrenamiento inteligente.</strong>
-        </p>
-
-        <ul class="mt-5 space-y-3 text-zinc-900/85">
-          <li class="flex items-start gap-3">
-            <span class="mt-1 inline-flex h-5 w-5 items-center justify-center rounded-full bg-sky-500/20 text-sky-700">✓</span>
-            <div><strong>Detectá patrones</strong> de timing y trade para ganar duelos clave.</div>
-          </li>
-          <li class="flex items-start gap-3">
-            <span class="mt-1 inline-flex h-5 w-5 items-center justify-center rounded-full bg-violet-500/20 text-violet-700">✓</span>
-            <div><strong>Optimizá tu posicionamiento</strong>: ángulos, crossfires y defaults en A/B.</div>
-          </li>
-          <li class="flex items-start gap-3">
-            <span class="mt-1 inline-flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-700">✓</span>
-            <div><strong>Decidí mejor en mid-round</strong>: rotaciones, retakes y clutches efectivos.</div>
-          </li>
-        </ul>
-      </div>
-
-      <p class="mt-6 text-sm text-zinc-700/80">Procesamiento local · Tus datos permanecen en tu dispositivo.</p>
-    </section>
-
-    <!-- RIGHT: form -->
-    <section class="order-1 lg:order-2">
-      <div class="glass ring-soft rounded-2xl p-6 md:p-7">
-        <h2 class="mb-4 text-xl font-semibold text-white">{{ 'Crear cuenta' if mode=='register' else 'Iniciar sesión' }}</h2>
-
-        <form method="post" class="space-y-4" onsubmit="this.querySelector('button[type=submit]').disabled=true;">
-          {% if mode=='register' %}
-            <div>
-              <label class="mb-1 block text-sm text-zinc-200">Usuario</label>
-              <input name="username" required
-                     class="w-full rounded-lg bg-zinc-800 px-3 py-2.5 text-zinc-100 outline-none ring-1 ring-white/10 transition focus:ring-sky-400/40" />
-            </div>
-            <div>
-              <label class="mb-1 block text-sm text-zinc-200">Email</label>
-              <input type="email" name="email" required
-                     class="w-full rounded-lg bg-zinc-800 px-3 py-2.5 text-zinc-100 outline-none ring-1 ring-white/10 transition focus:ring-sky-400/40" />
-            </div>
-            <div>
-              <label class="mb-1 block text-sm text-zinc-200">Contraseña</label>
-              <div class="relative">
-                <input id="pwd" type="password" name="password" required
-                       class="w-full rounded-lg bg-zinc-800 px-3 py-2.5 pr-10 text-zinc-100 outline-none ring-1 ring-white/10 transition focus:ring-sky-400/40" />
-                <button type="button" class="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-200"
-                        onclick="togglePwd('pwd', this)">👁</button>
-              </div>
-            </div>
-          {% else %}
-            <div>
-              <label class="mb-1 block text-sm text-zinc-200">Usuario o email</label>
-              <input name="identifier" required
-                     class="w-full rounded-lg bg-zinc-800 px-3 py-2.5 text-zinc-100 outline-none ring-1 ring-white/10 transition focus:ring-sky-400/40" />
-            </div>
-            <div>
-              <label class="mb-1 block text-sm text-zinc-200">Contraseña</label>
-              <div class="relative">
-                <input id="pwd" type="password" name="password" required
-                       class="w-full rounded-lg bg-zinc-800 px-3 py-2.5 pr-10 text-zinc-100 outline-none ring-1 ring-white/10 transition focus:ring-sky-400/40" />
-                <button type="button" class="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-200"
-                        onclick="togglePwd('pwd', this)">👁</button>
-              </div>
-            </div>
-            <label class="flex items-center gap-2 text-sm text-zinc-300">
-              <input type="checkbox" name="remember" class="h-4 w-4 rounded border-zinc-600 bg-zinc-800" />
-              Recordarme
-            </label>
-          {% endif %}
-
-          <button type="submit"
-            class="w-full rounded-xl bg-sky-500 px-3 py-2.5 text-white shadow transition hover:-translate-y-0.5 hover:bg-sky-400 disabled:opacity-60">
-            {{ 'Crear cuenta' if mode=='register' else 'Ingresar' }}
-          </button>
-        </form>
-
-        <div class="mt-4 text-center text-sm text-zinc-300">
-          {% if mode=='register' %}
-            ¿Ya tenés cuenta? <a href="{{ url_for('login') }}" class="text-sky-400 hover:text-sky-300">Ingresar</a>
-          {% else %}
-            ¿No tenés cuenta? <a href="{{ url_for('register') }}" class="text-sky-400 hover:text-sky-300">Crear cuenta</a>
-          {% endif %}
+    <!-- Hero panel -->
+    <div class="hero-panel p-8 md:p-10 text-slate-100">
+      <div class="flex items-center gap-3 mb-6">
+        <img src="{{ url_for('static', filename='brand/mark.png') }}" class="h-10 w-10" alt="Sharpix">
+        <div>
+          <p class="text-xs uppercase tracking-[0.2em] text-emerald-200/80">CS2 Feedback</p>
+          <p class="text-sm text-slate-300">Mirage · Entrenamiento asistido</p>
         </div>
       </div>
+
+      <h1 class="text-3xl md:text-4xl font-bold leading-tight">Entrenamiento asistido por datos</h1>
+      <p class="mt-3 text-slate-200/90 max-w-xl">
+        Subí tus demos, identificá patrones de trade, timings y utilidades. Recibí quick wins listos para practicar y comparte el PDF con tu equipo.
+      </p>
+
+      <div class="mt-6 space-y-3 text-slate-200/85 text-sm">
+        <div class="flex items-start gap-3">
+          <span class="mt-1 h-2 w-2 rounded-full bg-emerald-400"></span>
+          <p>Score 0-5 con comparativas por rol y barra gradiente.</p>
+        </div>
+        <div class="flex items-start gap-3">
+          <span class="mt-1 h-2 w-2 rounded-full bg-sky-400"></span>
+          <p>Quick wins de 10-15 min para mejorar semana a semana.</p>
+        </div>
+        <div class="flex items-start gap-3">
+          <span class="mt-1 h-2 w-2 rounded-full bg-violet-400"></span>
+          <p>Exportación a PDF y vista por rondas para contexto.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form card -->
+    <section class="form-card p-6 md:p-8 text-white">
+      {% with msgs = get_flashed_messages() %}
+        {% if msgs %}
+          <div class="mb-4 space-y-2">
+            {% for m in msgs %}
+              <div class="auth-flash">
+                <span class="text-lg">⚠️</span>
+                <span>{{ m | safe }}</span>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+      <div class="mb-6 text-center">
+        <img src="{{ url_for('static', filename='brand/mark.png') }}" class="mx-auto h-8 w-8 opacity-80" alt="Sharpix">
+        <h2 class="mt-3 text-xl font-semibold">{{ 'Crear cuenta' if mode=='register' else 'Iniciar sesión' }}</h2>
+        <p class="text-sm text-slate-400">Completa tus datos para comenzar.</p>
+      </div>
+
+      <form method="post" class="space-y-4" onsubmit="this.querySelector('button[type=submit]').disabled=true;">
+        <div class="grid gap-2 md:grid-cols-2">
+          <a href="{{ url_for('auth_steam') }}" class="flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-[#171a21] px-3 py-2 text-sm text-white hover:border-[#66c0f4]/60 hover:shadow-[0_6px_20px_rgba(102,192,244,0.25)] transition">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/8/83/Steam_icon_logo.svg" alt="Steam" class="h-4 w-4">
+            <span>Continuar con Steam</span>
+          </a>
+          <a href="{{ url_for('auth_faceit') }}" class="flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-[#1f1f1f] px-3 py-2 text-sm text-white hover:border-[#ff5500]/60 hover:shadow-[0_6px_20px_rgba(255,85,0,0.28)] transition">
+            <svg class="h-4 w-4" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6 30.5L56 14l-16 36-10-14L6 30.5z" fill="#ff5500"/>
+            </svg>
+            <span>Continuar con FaceIt</span>
+          </a>
+        </div>
+        <div class="border-b border-white/10"></div>
+        {% if mode=='register' %}
+          <div>
+            <label class="mb-1 block text-sm text-slate-300">Usuario</label>
+            <input name="username" required class="w-full rounded-lg bg-slate-900 px-3 py-2.5 text-slate-100 placeholder:text-slate-500 outline-none ring-1 ring-white/10 focus:ring-emerald-400/50" />
+          </div>
+          <div>
+            <label class="mb-1 block text-sm text-slate-300">Email</label>
+            <input type="email" name="email" required class="w-full rounded-lg bg-slate-900 px-3 py-2.5 text-slate-100 placeholder:text-slate-500 outline-none ring-1 ring-white/10 focus:ring-emerald-400/50" />
+          </div>
+          <div>
+            <label class="mb-1 block text-sm text-slate-300">Contraseña</label>
+            <div class="relative">
+              <input id="pwd" type="password" name="password" required class="w-full rounded-lg bg-slate-900 px-3 py-2.5 pr-10 text-slate-100 placeholder:text-slate-500 outline-none ring-1 ring-white/10 focus:ring-emerald-400/50" />
+              <button type="button" class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200" onclick="togglePwd('pwd', this)">👁</button>
+            </div>
+          </div>
+        {% else %}
+          <div>
+            <label class="mb-1 block text-sm text-slate-300">Usuario o email</label>
+            <input name="identifier" required class="w-full rounded-lg bg-slate-900 px-3 py-2.5 text-slate-100 placeholder:text-slate-500 outline-none ring-1 ring-white/10 focus:ring-emerald-400/50" />
+          </div>
+          <div>
+            <label class="mb-1 block text-sm text-slate-300">Contraseña</label>
+            <div class="relative">
+              <input id="pwd" type="password" name="password" required class="w-full rounded-lg bg-slate-900 px-3 py-2.5 pr-10 text-slate-100 placeholder:text-slate-500 outline-none ring-1 ring-white/10 focus:ring-emerald-400/50" />
+              <button type="button" class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200" onclick="togglePwd('pwd', this)">👁</button>
+            </div>
+          </div>
+          <label class="flex items-center gap-2 text-sm text-slate-300">
+            <input type="checkbox" name="remember" class="h-4 w-4 rounded border-slate-600 bg-slate-900" />
+            Recordarme
+          </label>
+        {% endif %}
+
+        <button type="submit" class="w-full rounded-xl bg-emerald-500 px-3 py-2.5 text-white shadow transition hover:-translate-y-0.5 hover:bg-emerald-400 disabled:opacity-60">
+          {{ 'Crear cuenta' if mode=='register' else 'Ingresar' }}
+        </button>
+      </form>
+
+      <div class="mt-4 text-center text-sm text-slate-300">
+        {% if mode=='register' %}
+          ¿Ya tenés cuenta? <a href="{{ url_for('login') }}" class="text-emerald-300 hover:text-emerald-200">Ingresar</a>
+        {% else %}
+          ¿No tenés cuenta? <a href="{{ url_for('register') }}" class="text-emerald-300 hover:text-emerald-200">Crear cuenta</a>
+        {% endif %}
+      </div>
+      <p class="mt-6 text-xs text-slate-500 text-center">Procesamiento en la nube segura - Datos cifrados.</p>
     </section>
   </div>
 </div>
@@ -234,5 +198,6 @@
     i.type = i.type === 'password' ? 'text' : 'password';
     btn.textContent = i.type === 'password' ? '👁' : '🙈';
   }
+  document.body.classList.add('auth-page');
 </script>
 {% endblock %}

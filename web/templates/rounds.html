@@ -1,76 +1,106 @@
 {% extends "base.html" %}
 
-{# ---------------- Server-side data selection (sin window.*) ---------------- #}
-{# R: lista de rondas; puede venir de fixtures.roundsSample, fb.roundsSample o notes #}
-{% set R = (
-    fixtures.roundsSample
-      if fixtures is defined and fixtures.roundsSample is defined
-      else (fb.roundsSample if fb is defined and fb.roundsSample is defined
-            else (notes if notes is defined else []))
-) %}
-
 {% block content %}
-  <div class="mb-4 flex items-center justify-between">
+  <style>
+    @media (max-width: 768px) {
+      .rounds-table thead { display: none; }
+      .rounds-table tr { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 10px; padding: 10px 0; }
+      .rounds-table td { display: flex; justify-content: space-between; align-items: center; padding: 6px 8px; background: rgba(255,255,255,0.02); border-radius: 10px; }
+      .rounds-table td::before {
+        content: attr(data-label);
+        font-size: 11px;
+        color: rgba(255,255,255,0.55);
+        margin-right: 10px;
+      }
+      .rounds-table td:last-child { grid-column: 1 / -1; }
+    }
+  </style>
+  <div class="mb-4 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
     <h2 class="text-2xl font-semibold">Rondas (muestra)</h2>
-    {% if match_id is defined and match_id %}
+    {% if match_id %}
       <span class="rounded-full bg-sky-500/10 px-3 py-1 text-xs text-sky-300 ring-1 ring-sky-400/20">
         Match: {{ match_id }}
       </span>
     {% else %}
       <span class="rounded-full bg-sky-500/10 px-3 py-1 text-xs text-sky-300 ring-1 ring-sky-400/20">
-        Prototype Â· datos simulados
+        Prototype – datos simulados
       </span>
     {% endif %}
   </div>
 
   <div class="rounded-2xl bg-zinc-900/60 p-4 ring-1 ring-white/10">
     <div class="overflow-x-auto">
-      <table class="w-full text-left text-sm text-zinc-300">
+      <table class="w-full text-left text-sm text-zinc-300 rounds-table">
         <thead class="text-xs text-zinc-400">
           <tr>
             <th class="py-2 pr-4">Ronda</th>
-            <th class="py-2 pr-4">end_ts</th>
-            <th class="py-2 pr-4">plant_ts</th>
-            <th class="py-2 pr-4">plant_site</th>
-            <th class="py-2 pr-4">plant_zone_id</th>
+            <th class="py-2 pr-4">Lado</th>
+            <th class="py-2 pr-4">Ganador</th>
+            <th class="py-2 pr-4">Score</th>
+            <th class="py-2 pr-4">Plant</th>
+            <th class="py-2 pr-4">Resultado</th>
+            <th class="py-2 pr-4">Clutch</th>
+            <th class="py-2 pr-4">Entry</th>
+            <th class="py-2 pr-4">Notas</th>
           </tr>
         </thead>
         <tbody>
+          {% set R = rounds if rounds is defined else [] %}
           {% if R and R|length %}
             {% for r in R %}
+            {% set round_num = r.round if r.round is defined else r.get('round', loop.index) %}
+            {% set side = r.side if r.side is defined else r.get('side','') %}
+            {% set winner = r.winner if r.winner is defined else r.get('winner','') %}
+            {% set score_t = r.score_t if r.score_t is defined else r.get('score_t') %}
+            {% set score_ct = r.score_ct if r.score_ct is defined else r.get('score_ct') %}
+            {% set plant_site = r.plant_site if r.plant_site is defined else r.get('plant_site','') %}
+            {% set plant_ts = r.plant_ts if r.plant_ts is defined else r.get('plant_ts') %}
+            {% set result = r.result if r.result is defined else r.get('result','') %}
+            {% set clutch = r.clutch if r.clutch is defined else r.get('clutch','') %}
+            {% set entry = r.entry if r.entry is defined else r.get('entry','') %}
+            {% set notes = r.notes if r.notes is defined else r.get('notes','') %}
             <tr class="border-t border-white/5">
-              {# Soporta dos formatos:
-                 - fixtures: dict con claves round/end_ts/plant_ts/plant_site/plant_zone_id
-                 - notes:   podrÃ­a traer otras claves; si no estÃ¡n, mostramos vacÃ­o #}
-              <td class="py-2 pr-4 text-zinc-400">
-                {{ r.round if r.round is defined else (r['round'] if 'round' in r else loop.index) }}
-              </td>
-              <td class="py-2 pr-4 text-zinc-400">
-                {% set et = (r.end_ts if r.end_ts is defined else (r['end_ts'] if 'end_ts' in r else None)) %}
-                {{ ('%.3f'|format(et)) if et is not none else '' }}
-              </td>
-              <td class="py-2 pr-4 text-zinc-400">
-                {% set pt = (r.plant_ts if r.plant_ts is defined else (r['plant_ts'] if 'plant_ts' in r else None)) %}
-                {{ ('%.3f'|format(pt)) if pt is not none else '' }}
-              </td>
-              <td class="py-2 pr-4">
-                {% set ps = (r.plant_site if r.plant_site is defined else (r['plant_site'] if 'plant_site' in r else '')) %}
-                {% if ps == 'A' %}
-                  <span class="rounded-full bg-sky-500/10 px-2 py-0.5 text-xs text-sky-300 ring-1 ring-sky-400/30">A</span>
-                {% elif ps == 'B' %}
-                  <span class="rounded-full bg-violet-500/10 px-2 py-0.5 text-xs text-violet-300 ring-1 ring-violet-400/30">B</span>
+              <td class="py-2 pr-4 text-zinc-200" data-label="Ronda">{{ round_num }}</td>
+              <td class="py-2 pr-4" data-label="Lado">
+                {% if side and side|upper == 'T' %}
+                  <span class="rounded-full bg-amber-500/10 px-2 py-0.5 text-xs text-amber-300 ring-1 ring-amber-400/30">T</span>
+                {% elif side and side|upper == 'CT' %}
+                  <span class="rounded-full bg-sky-500/10 px-2 py-0.5 text-xs text-sky-300 ring-1 ring-sky-400/30">CT</span>
                 {% else %}
-                  <span class="text-zinc-500 text-xs">â€”</span>
+                  <span class="text-zinc-500 text-xs">—</span>
                 {% endif %}
               </td>
-              <td class="py-2 pr-4" title="Zona del plant">
-                {% set pz = (r.plant_zone_id if r.plant_zone_id is defined else (r['plant_zone_id'] if 'plant_zone_id' in r else '')) %}
-                {{ pz }}
+              <td class="py-2 pr-4" data-label="Ganador">
+                {% if winner %}
+                  <span class="rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs text-emerald-200 ring-1 ring-emerald-400/30">{{ winner }}</span>
+                {% else %}
+                  <span class="text-zinc-500 text-xs">—</span>
+                {% endif %}
               </td>
+              <td class="py-2 pr-4 text-zinc-300" data-label="Score">
+                {% if score_t is not none and score_ct is not none %}
+                  {{ score_t }} - {{ score_ct }}
+                {% else %}
+                  —
+                {% endif %}
+              </td>
+              <td class="py-2 pr-4" data-label="Plant">
+                {% if plant_site %}
+                  <span class="rounded-full bg-indigo-500/10 px-2 py-0.5 text-xs text-indigo-200 ring-1 ring-indigo-400/30">
+                    {{ plant_site }}{% if plant_ts %} @ {{ "%.1f"|format(plant_ts) }}s{% endif %}
+                  </span>
+                {% else %}
+                  <span class="text-zinc-500 text-xs">sin plant</span>
+                {% endif %}
+              </td>
+              <td class="py-2 pr-4 text-zinc-200" data-label="Resultado">{{ result or '—' }}</td>
+              <td class="py-2 pr-4 text-zinc-200" data-label="Clutch">{{ clutch or '—' }}</td>
+              <td class="py-2 pr-4 text-zinc-200" data-label="Entry">{{ entry or '—' }}</td>
+              <td class="py-2 pr-4 text-zinc-300" data-label="Notas">{{ notes or '—' }}</td>
             </tr>
             {% endfor %}
           {% else %}
-            <tr><td colspan="5" class="py-4 text-zinc-500">Sin datos de rondas.</td></tr>
+            <tr><td colspan="9" class="py-4 text-zinc-500">Sin datos de rondas.</td></tr>
           {% endif %}
         </tbody>
       </table>

@@ -1,181 +1,381 @@
+{# templates/summary.html #}
 {% extends "base.html" %}
-
-{# ------------------ Imports de componentes ------------------ #}
-{% from "components/score_badge.html"  import hero_score %}
-{% from "components/kpi_card.html"     import kpi_card %}
-{% from "components/quick_win.html"    import quick_win %}
-{% from "components/table_events.html" import table_events %}
-
-{# ------------------ Fallbacks / alias de datos ------------------ #}
-{% set S = (fb.summary if fb is defined and fb.summary else (fixtures.summaryMock if fixtures is defined else None)) %}
-{% set KPIS = (S.kpis if S and S.kpis is defined else []) %}
-{% set PP   = (S.postplant if S and S.postplant is defined else {'A':{'attempts':0,'winrate':0,'tsAliveEndAvg':0}, 'B':{'attempts':0,'winrate':0,'tsAliveEndAvg':0}}) %}
-{% set TOPZ = (S.topDeathZones if S and S.topDeathZones is defined else []) %}
-{% set QW   = (S.quickWins if S and S.quickWins is defined else []) %}
-{% set EV   = (fb.eventsSample if fb is defined and fb.eventsSample else (fixtures.eventsSample if fixtures is defined else [])) %}
-
+{% set has_fb = fb is defined and fb %}
 {% block content %}
+<div class="mx-auto max-w-6xl px-5 py-8 space-y-8" x-data>
 
-<!-- Header centrado con Score protagonista -->
-<div class="mb-8 flex flex-col items-center text-center">
-  {{ hero_score(S.score10 if S and S.score10 is defined else 0, S.score100 if S and S.score100 is defined else 0) }}
+  <!-- Header / Match basics (actualizado) -->
+  <section id="summary-header" class="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-6 shadow-lg">
+    {% set score100 = (has_fb and (fb.summary.score100|int) or 83) %}
+    {% set score5 = (score100 / 20.0) %}
+    {% set score5_txt = "%.1f"|format(score5) %}
 
-  <h1 class="mt-5 text-2xl font-semibold tracking-tight">
-    {{ S.matchId if S and S.matchId is defined else (match_id or 'mirage_demo') }}
-  </h1>
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div>
+        <div class="inline-flex items-center gap-2">
+          <img src="{{ url_for('static', filename='brand/mark.png') }}" alt="Sharpix" class="w-7 h-7 rounded-lg"/>
+          <span class="text-xs tracking-wide px-2 py-1 rounded-full bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-400/30">Procesado automáticamente</span>
+        </div>
 
-  <div class="mt-1 text-sm text-zinc-400">
-    {{ (S.date ~ ' · ') if S and S.date else '' }}{{ (S.map|capitalize) if S and S.map else 'Mirage' }}
-  </div>
+        <!-- Título: sólo el mapa -->
+        <h1 class="mt-2 text-2xl md:text-3xl font-bold" id="map-title">
+          {{ has_fb and fb.summary.map or "Mirage" }}
+        </h1>
 
-  <div class="mt-3">
-    <span class="rounded-full bg-sky-500/10 px-3 py-1 text-xs text-sky-300 ring-1 ring-sky-400/20">
-      Prototype · datos simulados
-    </span>
-  </div>
+        <!-- Meta -->
+        <p class="text-slate-300">
+          Score: <b id="score">{{ has_fb and fb.summary.score or "16-12" }}</b>
+          · Duración: <span id="duration">{{ has_fb and fb.summary.duration or "45:32" }}</span>
+          · Rendimiento: <b id="score100">{{ score100 }}</b>/100
+        </p>
 
-  <div class="mt-4 flex gap-3">
-    <a href="{{ url_for('rounds_root') if not match_id else url_for('rounds', match_id=match_id) }}"
-       class="rounded-xl border border-white/10 bg-zinc-900 px-3 py-1.5 text-sm text-zinc-200 hover:bg-zinc-800">
-      Ver rondas
-    </a>
-    <a href="{{ url_for('upload') }}"
-       class="rounded-xl bg-sky-500 px-3 py-1.5 text-sm text-white hover:bg-sky-400">
-      Subir otra demo
-    </a>
-  </div>
-</div>
-
-<!-- KPIs -->
-<div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-  {% for k in KPIS %}
-    {{ kpi_card(
-        label = k.label if k.label is defined else ('KPI ' ~ loop.index),
-        weight = k.weight if k.weight is defined else 0,
-        value100 = k.value100 if k.value100 is defined else 0,
-        contribution = k.contribution if k.contribution is defined else 0,
-        evidence = k.evidence if k.evidence is defined else '',
-        limited = (k.evidence is string and ('limit' in k.evidence|lower))
-      )
-    }}
-  {% endfor %}
-</div>
-
-<!-- Post-plant A/B + mini chart -->
-<div class="mt-6 grid gap-4 lg:grid-cols-3">
-  <div class="rounded-2xl bg-zinc-900/60 p-5 ring-1 ring-white/10">
-    <div class="text-sm font-medium text-zinc-200">Post-plant A</div>
-    <div class="mt-2 text-3xl font-semibold">
-      {{ ((PP.A.winrate * 100)|round(0)|int if PP.A.winrate is defined else 0) }}%
-    </div>
-    <div class="mt-1 text-sm text-zinc-400">
-      Intentos: {{ PP.A.attempts if PP.A.attempts is defined else 0 }}
-      · T vivos fin: {{ PP.A.tsAliveEndAvg if PP.A.tsAliveEndAvg is defined else '-' }}
-    </div>
-  </div>
-
-  <div class="rounded-2xl bg-zinc-900/60 p-5 ring-1 ring-white/10">
-    <div class="text-sm font-medium text-zinc-200">Post-plant B</div>
-    <div class="mt-2 text-3xl font-semibold">
-      {{ ((PP.B.winrate * 100)|round(0)|int if PP.B.winrate is defined else 0) }}%
-    </div>
-    <div class="mt-1 text-sm text-zinc-400">
-      Intentos: {{ PP.B.attempts if PP.B.attempts is defined else 0 }}
-      · T vivos fin: {{ PP.B.tsAliveEndAvg if PP.B.tsAliveEndAvg is defined else '-' }}
-    </div>
-  </div>
-
-  <div class="rounded-2xl bg-zinc-900/60 p-5 ring-1 ring-white/10">
-    <div class="mb-3 text-sm font-medium text-zinc-200">Post-plant (mini)</div>
-    <canvas id="ppMini" height="120"></canvas>
-  </div>
-</div>
-
-<!-- Top zonas + Quick wins -->
-<div class="mt-6 grid gap-4 lg:grid-cols-3">
-  <div class="rounded-2xl bg-zinc-900/60 p-5 ring-1 ring-white/10 lg:col-span-2">
-    <div class="mb-3 flex items-center justify-between">
-      <div class="text-sm font-medium text-zinc-200">Top zonas de muertes</div>
-      <!-- Chips top-3 -->
-      <div class="hidden gap-2 md:flex">
-        {% for z in TOPZ[:3] %}
-          <span class="rounded-full bg-white/5 px-2 py-0.5 text-xs text-zinc-300 ring-1 ring-white/10">
-            {{ z.zone }} · {{ ((z.pct*100)|round(0)|int if z.pct is defined else 0) }}%
+        <!-- Score moderno 0–5 -->
+        <div class="mt-3 flex items-center gap-3">
+          <!-- Chip -->
+          <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl
+                       bg-gradient-to-r from-emerald-500 to-sky-500 text-white shadow-sm">
+            <span class="text-base font-semibold" id="score5-chip">{{ score5_txt }}</span>
+            <span class="text-xs opacity-90">/ 5</span>
           </span>
-        {% endfor %}
+
+          <!-- Barra con marcas -->
+          <div class="flex-1">
+            <div class="relative w-full h-2 rounded-full bg-white/10 overflow-hidden">
+              <div id="score-bar" class="absolute inset-0 bg-gradient-to-r from-emerald-400 to-sky-400"
+                   style="width: {{ score100 }}%;"></div>
+              <div class="absolute inset-0 flex justify-between">
+                {% for _ in range(5) %}
+                  <span class="h-2 w-px bg-white/20"></span>
+                {% endfor %}
+              </div>
+            </div>
+            <div class="flex justify-between text-[10px] text-white/60 mt-1">
+              <span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rol sugerido (NUEVO) -->
+        <div class="mt-3" id="role-suggested">
+          <span id="role-pill"
+                class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl
+                       text-white ring-1 ring-white/10 bg-white/10 backdrop-blur-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 opacity-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M5 13l4 4L19 7"/>
+            </svg>
+            <span>Rol sugerido: <b id="role-name">Rifler</b></span>
+          </span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <a href="{{ url_for('rounds_demo') if (not has_fb or not (fb.summary.match_id is defined and fb.summary.match_id)) else url_for('rounds_with_id', match_id=fb.summary.match_id) }}"
+           class="inline-flex items-center justify-center rounded-xl px-4 py-2 bg-white/10 hover:bg-white/15 text-white backdrop-blur transition">
+          Ver por ronda
+        </a>
+        <button type="button"
+                class="inline-flex items-center justify-center rounded-xl px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white transition"
+                onclick="window.print()">
+          Exportar (PDF)
+        </button>
       </div>
     </div>
-    <canvas id="topZones" height="180"></canvas>
-  </div>
+  </section>
 
-  <div class="space-y-3">
-    {% if QW and QW|length > 0 %}
-      {% for q in QW %}
-        {{ quick_win(q) }}
+  <!-- Lado dominante -->
+  {% set sides = has_fb and fb.sides or {} %}
+  {% set sdata = sides.sides if sides and sides.sides is defined else {} %}
+  <section class="space-y-3">
+    <h2 class="text-xl md:text-2xl font-semibold text-white tracking-tight drop-shadow-[0_1px_0_rgba(0,0,0,.45)]">
+      Rendimiento por lado
+    </h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {% for side_code, meta in {"T": sdata.get("T", {}), "CT": sdata.get("CT", {})}.items() %}
+      <div class="p-4 rounded-xl bg-white/5 border border-white/10">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="inline-flex items-center justify-center h-8 w-8 rounded-full
+                         {% if side_code == 'T' %}bg-amber-500/20 text-amber-200{% else %}bg-sky-500/20 text-sky-200{% endif %}">
+              {{ side_code }}
+            </span>
+            <div>
+              <p class="text-sm text-white/80 font-semibold">Rondas: {{ meta.rounds or 0 }}</p>
+              <p class="text-xs text-white/60">Ganadas: {{ meta.won or 0 }}</p>
+            </div>
+          </div>
+          <div class="text-right">
+            <p class="text-2xl font-bold text-white">{{ (meta.win_rate or 0) }}%</p>
+            <p class="text-xs text-white/60">Win rate</p>
+          </div>
+        </div>
+        <div class="mt-3 grid grid-cols-2 gap-2 text-xs text-white/70">
+          <div class="p-2 rounded-lg bg-white/5 border border-white/5">
+            <p class="text-white font-semibold text-sm">{{ meta.plants or 0 }}</p>
+            <p class="text-white/70">Plants</p>
+          </div>
+          <div class="p-2 rounded-lg bg-white/5 border border-white/5">
+            <p class="text-white font-semibold text-sm">{{ meta.plant_conv or 0 }}%</p>
+            <p class="text-white/70">Conv. plants</p>
+          </div>
+        </div>
+      </div>
       {% endfor %}
-    {% else %}
-      <div class="rounded-2xl bg-zinc-900/60 p-5 text-sm text-zinc-400 ring-1 ring-white/10">Sin quick wins.</div>
-    {% endif %}
-  </div>
+    </div>
+  </section>
+
+  <!-- KPI grid -->
+  <section class="space-y-4">
+    <h2 class="text-xl md:text-2xl font-semibold text-white tracking-tight drop-shadow-[0_1px_0_rgba(0,0,0,.45)]">
+      Métricas clave
+    </h2>
+    <div id="kpi-grid" class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
+      {% set kpis = has_fb and fb.kpis or [
+        {"name":"Kills / Deaths","value":"1.15","label":"Buen rendimiento"},
+        {"name":"Eficiencia de Trades","value":"72%","label":"🟢 Buena"},
+        {"name":"Control de Mid","value":"58%","label":"🟠 Inestable"},
+        {"name":"Uso de Utilidades","value":"41%","label":"🔴 Bajo"},
+        {"name":"Plant/Defuse","value":"62%","label":"Correcto"}
+      ] %}
+      {% for kpi in kpis %}
+      <div class="group p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800/80 shadow-sm hover:shadow-md transition">
+        <p class="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">{{ kpi.name }}</p>
+        <p class="mt-1 text-2xl font-bold text-slate-900 dark:text-white">{{ kpi.value }}</p>
+        <p class="text-xs text-slate-500 dark:text-slate-400">{{ kpi.label }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- Strengths / Weaknesses / Quick Wins -->
+  <section class="space-y-4">
+    <h2 class="text-xl md:text-2xl font-semibold text-white tracking-tight drop-shadow-[0_1px_0_rgba(0,0,0,.45)]">
+      Diagnóstico táctico
+    </h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="insights-grid">
+
+      {% set strengths = has_fb and fb.insights.strengths or [
+        "Control temprano de B",
+        "Coordinación en retakes",
+        "Coberturas cruzadas efectivas en A"
+      ] %}
+      {% set weaknesses = has_fb and fb.insights.weaknesses or [
+        "Falta de humo en CT",
+        "Peek sin flash en mid",
+        "Rotaciones tardías desde B"
+      ] %}
+      {% set quick_wins = has_fb and fb.insights.quick_wins or [
+        "Practicar retake B (2v3) — 15 min",
+        "Timings de rotación mid→A — 10 min",
+        "Set de humos A site — 10 min"
+      ] %}
+
+      <!-- Fortalezas -->
+      <div class="rounded-2xl p-5 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200/60 dark:border-emerald-900/40">
+        <h3 class="font-semibold text-emerald-900 dark:text-emerald-200 flex items-center gap-2">
+          💪 Puntos fuertes
+        </h3>
+        <ul class="mt-3 list-disc pl-5 text-sm text-emerald-950/80 dark:text-emerald-100/90 space-y-1" id="strengths">
+          {% for item in strengths %}<li>{{ item }}</li>{% endfor %}
+        </ul>
+      </div>
+
+      <!-- Debilidades -->
+      <div class="rounded-2xl p-5 bg-amber-50 dark:bg-amber-900/20 border border-amber-200/60 dark:border-amber-900/40">
+        <h3 class="font-semibold text-amber-900 dark:text-amber-200 flex items-center gap-2">
+          ⚠️ Puntos débiles
+        </h3>
+        <ul class="mt-3 list-disc pl-5 text-sm text-amber-950/80 dark:text-amber-100/90 space-y-1" id="weaknesses">
+          {% for item in weaknesses %}<li>{{ item }}</li>{% endfor %}
+        </ul>
+      </div>
+
+      <!-- Quick Wins -->
+      <div class="rounded-2xl p-5 bg-sky-50 dark:bg-sky-900/20 border border-sky-200/60 dark:border-sky-900/40">
+        <h3 class="font-semibold text-sky-900 dark:text-sky-200 flex items-center gap-2">
+          ⚡ Quick wins
+        </h3>
+        <ul class="mt-3 list-disc pl-5 text-sm text-sky-950/80 dark:text-sky-100/90 space-y-1" id="quickwins">
+          {% for item in quick_wins %}<li>{{ item }}</li>{% endfor %}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Visual / Heatmap placeholder -->
+  <section class="space-y-2">
+    <h2 class="text-xl md:text-2xl font-semibold text-white tracking-tight drop-shadow-[0_1px_0_rgba(0,0,0,.45)]">
+      Mapa de calor K/D
+    </h2>
+    <div class="rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow">
+      <img id="heatmap-img"
+           src="{{ url_for('static', filename='brand/heatmap_mock.png') }}"
+           alt="Heatmap Mirage (placeholder)"
+           class="w-full h-auto max-h-[560px] object-contain mx-auto select-none">
+    </div>
+  
+  </section>
+
+  <!-- Sugerencias de entrenamiento (extra para pantallazo) -->
+  <section class="space-y-4">
+    <h2 class="text-xl md:text-2xl font-semibold text-white tracking-tight drop-shadow-[0_1px_0_rgba(0,0,0,.45)]">
+      Sugerencias de entrenamiento
+    </h2>
+    <div id="training-list" class="grid md:grid-cols-2 gap-4">
+      {% set training = has_fb and fb.training or [
+        {"title":"Set de humos A (Mirage)","tip":"Pulir lineup desde Tetris y Palace · objetivo: consistencia 90%."},
+        {"title":"Retake B (2v3)","tip":"Roles claros y flash pop desde short · 3 repeticiones x ronda."},
+        {"title":"Peeks en Mid con flash","tip":"Evitar dry peeks en timings previsibles · usar one-way humo top mid."},
+        {"title":"Rotaciones más tempranas","tip":"Definir callee + trigger de rotación al primer info de presencia."}
+      ] %}
+      {% for t in training %}
+      <div class="rounded-2xl p-4
+        border border-emerald-300/40
+        bg-gradient-to-br from-emerald-500/15 to-sky-500/15
+        backdrop-blur-md
+        transition-all duration-300 hover:-translate-y-0.5 hover:border-emerald-400 hover:shadow-lg">
+        <p class="font-medium text-white">{{ t.title }}</p>
+        <p class="text-sm text-slate-200/90">{{ t.tip }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
 </div>
 
-<!-- Tabla de eventos (muestra) -->
-<div class="mt-6 rounded-2xl bg-zinc-900/60 p-5 ring-1 ring-white/10">
-  <div class="mb-3 text-sm font-medium text-zinc-200">Eventos (muestra)</div>
-  {{ table_events(EV if EV else []) }}
-</div>
-
-{% endblock %}
-
-{% block scripts %}
+<!-- ====== LÓGICA DEL ROL SUGERIDO (para real + fixtures) ====== -->
 <script>
-(() => {
-  // Datos para los gráficos desde el template
-  const PP = {{ PP | tojson | safe }};
-  const TOPZ = {{ TOPZ | tojson | safe }};
-
-  // Post-plant mini bar
+/** Lee KPIs y define un rol sugerido. Espera value100 (0..100) por KPI id. */
+function updateRole(kpis) {
   try {
-    const ctx = document.getElementById('ppMini');
-    if (ctx && PP && PP.A && PP.B) {
-      new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: ['A', 'B'],
-          datasets: [{
-            label: 'Win rate',
-            data: [
-              Math.round((PP.A.winrate || 0) * 100),
-              Math.round((PP.B.winrate || 0) * 100)
-            ]
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: { legend: { display: false } },
-          scales: { y: { min: 0, max: 100, ticks: { callback: v => v + '%' } } }
-        }
-      });
-    }
-  } catch(e) { console.warn('ppMini chart error', e); }
+    if (!Array.isArray(kpis) || !kpis.length) return;
+    const byId = (id) => {
+      const it = kpis.find(k => k.id === id);
+      return it && typeof it.value100 === 'number' ? it.value100 : 0;
+    };
+    const trades   = byId('trades_5s');
+    const opening  = byId('opening_impact');
+    const util     = byId('util_dmg_rd');
+    const post     = byId('postplant');
+    const clutch   = byId('clutch_2vx');
 
-  // Top zonas bar
-  try {
-    const tctx = document.getElementById('topZones');
-    if (tctx && Array.isArray(TOPZ)) {
-      const labels = TOPZ.map(z => z.zone || '');
-      const values = TOPZ.map(z => Math.round((z.pct || 0) * 100));
-      new Chart(tctx, {
-        type: 'bar',
-        data: { labels, datasets: [{ label: '% muertes', data: values }] },
-        options: {
-          responsive: true,
-          plugins: { legend: { display: false } },
-          scales: { y: { min: 0, max: Math.max(100, Math.ceil(Math.max(...values, 0)/5)*5) } }
-        }
-      });
+    const scores = [
+      { key: 'entry',   label: 'Entry',    ring: 'ring-rose-300/40',    bg: 'bg-rose-400/15',    val: 0.60*opening + 0.40*trades },
+      { key: 'support', label: 'Support',  ring: 'ring-sky-300/40',     bg: 'bg-sky-400/15',     val: 0.70*util    + 0.30*post   },
+      { key: 'closer',  label: 'Closer',   ring: 'ring-amber-300/40',   bg: 'bg-amber-400/15',   val: 0.70*clutch  + 0.30*post   },
+      { key: 'anchor',  label: 'Anchor',   ring: 'ring-violet-300/40',  bg: 'bg-violet-400/15',  val: 0.50*post    + 0.30*(100-opening) + 0.20*trades },
+      { key: 'lurker',  label: 'Lurker',   ring: 'ring-emerald-300/40', bg: 'bg-emerald-400/15', val: 0.50*(100-trades) + 0.50*post },
+      { key: 'awp',     label: 'AWPer',    ring: 'ring-indigo-300/40',  bg: 'bg-indigo-400/15',  val: 0.75*opening + 0.25*util }
+    ];
+
+    scores.sort((a,b)=>b.val-a.val);
+    const best = scores[0];
+
+    const pill = document.getElementById('role-pill');
+    const name = document.getElementById('role-name');
+    if (pill && name) {
+      name.textContent = best.label;
+      pill.className =
+        "inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-white ring-1 backdrop-blur-sm " +
+        best.bg + " " + best.ring + " ring-white/10";
     }
-  } catch(e) { console.warn('topZones chart error', e); }
+  } catch (e) {
+    console.warn('updateRole error', e);
+  }
+}
+</script>
+
+{% if has_fb and fb.summary and fb.summary.suggested_role %}
+<!-- Rol sugerido provisto por backend -->
+<script>
+  (function(){
+    const role = {{ fb.summary.suggested_role | tojson }};
+    const pill = document.getElementById('role-pill');
+    const name = document.getElementById('role-name');
+    if (pill && name) { name.textContent = role; }
+  })();
+  </script>
+{% elif has_fb and fb.kpis %}
+<!-- KPIs reales desde Flask -->
+<script>
+  updateRole({{ fb.kpis | tojson | safe }});
+</script>
+{% endif %}
+
+{% if not has_fb %}
+<script>
+/* Fallback: si no llega fb desde Flask, cargamos fixtures para sacar capturas */
+(async () => {
+  try {
+    const res = await fetch("{{ url_for('static', filename='fixtures.json') }}", {cache: "no-store"});
+    if (!res.ok) return;
+    const fb = await res.json();
+
+    // Header (sin team)
+    const setText = (sel, val) => { const el = document.querySelector(sel); if (el && val != null) el.textContent = val; };
+    setText("#map-title", fb?.summary?.map ?? "Mirage");
+    setText("#score", fb?.summary?.score ?? "16-12");
+    setText("#duration", fb?.summary?.duration ?? "45:32");
+    const s100 = Number(fb?.summary?.score100 ?? 83);
+    setText("#score100", String(s100));
+    // barra y chip 0–5
+    const bar = document.getElementById("score-bar");
+    if (bar) bar.style.width = (Math.max(0, Math.min(100, s100))) + "%";
+    const chip = document.getElementById("score5-chip");
+    if (chip) chip.textContent = (s100/20).toFixed(1);
+
+    // KPIs
+    const kpiGrid = document.getElementById("kpi-grid");
+    if (kpiGrid && Array.isArray(fb?.kpis)) {
+      kpiGrid.innerHTML = "";
+      for (const k of fb.kpis) {
+        const card = document.createElement("div");
+        card.className = "group p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800/80 shadow-sm hover:shadow-md transition";
+        card.innerHTML = `
+          <p class="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">${k.name}</p>
+          <p class="mt-1 text-2xl font-bold text-slate-900 dark:text-white">${k.value}</p>
+          <p class="text-xs text-slate-500 dark:text-slate-400">${k.label ?? ""}</p>`;
+        kpiGrid.appendChild(card);
+      }
+      // Rol sugerido con fixtures
+      updateRole(fb.kpis);
+    }
+
+    // Insights
+    const renderList = (id, arr) => {
+      const ul = document.getElementById(id);
+      if (!ul || !Array.isArray(arr)) return;
+      ul.innerHTML = "";
+      for (const item of arr) {
+        const li = document.createElement("li");
+        li.textContent = item;
+        ul.appendChild(li);
+      }
+    };
+    renderList("strengths", fb?.insights?.strengths);
+    renderList("weaknesses", fb?.insights?.weaknesses);
+    renderList("quickwins", fb?.insights?.quick_wins);
+
+    // Training
+    const training = fb?.training;
+    const tList = document.getElementById("training-list");
+    if (tList && Array.isArray(training)) {
+      tList.innerHTML = "";
+      for (const t of training) {
+        const div = document.createElement("div");
+        div.className = "rounded-2xl p-4 border border-emerald-300/40 \
+                 bg-gradient-to-br from-emerald-500/15 to-sky-500/15 \
+                 backdrop-blur-md transition-all duration-300 \
+                 hover:-translate-y-0.5 hover:border-emerald-400 hover:shadow-lg";
+        div.innerHTML = `<p class="font-medium text-white">${t.title}</p>
+                 <p class="text-sm text-slate-200/90">${t.tip}</p>`;
+        tList.appendChild(div);
+      }
+    }
+  } catch (e) {
+    console.warn("No se pudo cargar fixtures.json (fallback).", e);
+  }
 })();
 </script>
+{% endif %}
 {% endblock %}

@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block head %}
+<style>
+  .verify-shell { min-height: 100vh; background: linear-gradient(145deg, #0b0e18 0%, #0f172a 55%, #0b0e18 100%); }
+  .verify-card {
+    max-width: 480px;
+    margin: 0 auto;
+    background: linear-gradient(180deg, rgba(24,24,27,0.9), rgba(17,24,39,0.85));
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+    border-radius: 20px;
+  }
+  .verify-page main { max-width: 100%; padding: 0; }
+  .verify-flash {
+    display: flex; gap: 10px; padding: 10px 12px; border-radius: 12px;
+    border: 1px solid rgba(16,185,129,0.35);
+    background: rgba(16,185,129,0.12);
+    color: #d1fae5;
+    font-size: 0.9rem;
+  }
+  /* Ocultar el flash global del layout en esta vista (usamos el local) */
+  body.verify-page main > .mb-4 { display: none; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="verify-shell flex items-center justify-center px-4 py-16">
+  <div class="verify-card p-6 md:p-8 text-white">
+    {% with msgs = get_flashed_messages() %}
+      {% if msgs %}
+        <div class="mb-4 space-y-2">
+          {% for m in msgs %}
+            <div class="verify-flash"><span>!</span><span>{{ m | safe }}</span></div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <div class="text-center mb-6">
+      <img src="{{ url_for('static', filename='brand/mark.png') }}" class="mx-auto h-8 w-8 opacity-80" alt="Sharpix">
+      <h1 class="mt-3 text-2xl font-semibold">Verifica tu email</h1>
+      <p class="text-sm text-slate-400">Enviamos un codigo a {{ email }}. Ingresa el codigo para continuar.</p>
+    </div>
+
+    <form method="post" class="space-y-4">
+      <input type="hidden" name="email" value="{{ email }}">
+      <div>
+        <label class="mb-1 block text-sm text-slate-300">Codigo</label>
+        <input name="code" required class="w-full rounded-lg bg-slate-900 px-3 py-2.5 text-slate-100 placeholder:text-slate-500 outline-none ring-1 ring-white/10 focus:ring-emerald-400/50" placeholder="123456" />
+      </div>
+      <button type="submit" class="w-full rounded-xl bg-emerald-500 px-3 py-2.5 text-white shadow transition hover:-translate-y-0.5 hover:bg-emerald-400 disabled:opacity-60">Verificar</button>
+    </form>
+    <p class="mt-4 text-center text-sm text-slate-400">¿No recibiste el codigo? Reintenta login/registro para reenviar.</p>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.body.classList.add('verify-page');
+</script>
+{% endblock %}
+

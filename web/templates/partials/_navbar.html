@@ -14,9 +14,17 @@
 
     <!-- NAVIGATION -->
     <nav class="flex items-center gap-6 text-sm text-zinc-300">
-      <a href="{{ url_for('upload') }}" class="hover:text-white transition">Upload</a>
-      <a href="{{ url_for('summary_root') }}" class="hover:text-white transition">Summary</a>
-      <a href="{{ url_for('rounds_root') }}" class="hover:text-white transition">Rounds</a>
+
+      <!-- Público -->
+      <a href="{{ url_for('home') }}" class="hover:text-white transition">Inicio</a>
+      <a href="{{ url_for('summary_demo') }}" class="hover:text-white transition">Demo</a>
+      <a href="{{ url_for('home') }}#pricing" class="hover:text-white transition">Pricing</a>
+      <a href="{{ url_for('faq') }}" class="hover:text-white transition">Preguntas frecuentes</a>
+
+      <!-- Sólo con sesión -->
+      {% if current_user.is_authenticated %}
+        <a href="{{ url_for('upload') }}" class="hover:text-white transition">Upload</a>
+      {% endif %}
 
       <!-- Divider -->
       <span class="mx-1 h-4 w-px bg-white/10"></span>

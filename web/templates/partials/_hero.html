@@ -1,0 +1,24 @@
+<div class="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-r from-zinc-900 via-zinc-800 to-zinc-900 px-6 py-8 shadow-xl">
+  <div class="pointer-events-none absolute -left-10 -top-10 h-44 w-44 rounded-full bg-sky-500/20 blur-3xl"></div>
+  <div class="pointer-events-none absolute -right-8 -bottom-10 h-52 w-52 rounded-full bg-emerald-500/20 blur-3xl"></div>
+
+  <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+    <div class="max-w-2xl space-y-2">
+      <p class="text-sm uppercase tracking-[0.25em] text-white/50">cs2 feedback</p>
+      <h1 class="text-3xl font-semibold text-white md:text-4xl">
+        Bienvenido, {{ current_user.username or "player" }}
+      </h1>
+      <p class="text-base text-white/70">
+        Sube una demo de Mirage, recibe el resumen con KPIs y quick wins, y guarda tus ultimos matchs en tu panel.
+      </p>
+    </div>
+    <div class="flex flex-col gap-3 text-sm text-white/80">
+      <a href="{{ url_for('upload') }}" class="inline-flex items-center justify-center rounded-xl bg-emerald-500 px-4 py-2 font-medium text-emerald-950 shadow-lg shadow-emerald-500/30 hover:bg-emerald-400">
+        Subir demo
+      </a>
+      <a href="{{ url_for('summary_root') }}" class="inline-flex items-center justify-center rounded-xl border border-white/15 px-4 py-2 text-white hover:border-white/30 hover:bg-white/5">
+        Ver demo de ejemplo
+      </a>
+    </div>
+  </div>
+</div>
