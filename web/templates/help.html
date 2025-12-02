@@ -1,25 +1,50 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 
 {% block content %}
-<h1 class="mb-2 text-2xl font-semibold">Guías y preguntas frecuentes</h1>
-<p class="mb-4 text-sm text-zinc-400">Resumen rápido de cómo leer el tablero y qué significan los KPIs.</p>
+<section class="rounded-2xl border border-white/10 bg-zinc-900/70 p-6 md:p-8">
+  <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+    <div>
+      <p class="text-xs uppercase tracking-[0.25em] text-emerald-300/80">Centro de ayuda</p>
+      <h1 class="text-2xl font-semibold text-white">Guia rapida para usar Sharpix</h1>
+      <p class="text-sm text-zinc-400">Pasos simples, sin tecnicismos. Si necesitas mas, visita las preguntas frecuentes.</p>
+    </div>
+    <a href="{{ url_for('faq') }}" class="inline-flex items-center gap-2 rounded-lg bg-emerald-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-emerald-500/25 transition hover:bg-emerald-600">
+      Ver FAQ
+    </a>
+  </div>
 
-<div class="grid gap-3">
-  <details class="rounded-2xl bg-zinc-900/60 p-4 ring-1 ring-white/10" open>
-    <summary class="cursor-pointer list-none font-medium">¿Qué es el Score 1–10?</summary>
-    <p class="mt-2 text-sm text-zinc-300">Es un score agregado (0–100 → 1–10) con pesos: Trades 30%, Post-plant 25%, Utility 20%, Opening 15%, 2vX 10%. Repondera si falta evidencia.</p>
-  </details>
-  <details class="rounded-2xl bg-zinc-900/60 p-4 ring-1 ring-white/10">
-    <summary class="cursor-pointer list-none font-medium">¿Cómo se calcula “Post-plant A vs B”?</summary>
-    <p class="mt-2 text-sm text-zinc-300">Win rate por sitio (A/B), intentos y T vivos al finalizar la ronda según rounds.csv y events.csv anotados por zonas (Mirage).</p>
-  </details>
-  <details class="rounded-2xl bg-zinc-900/60 p-4 ring-1 ring-white/10">
-    <summary class="cursor-pointer list-none font-medium">Zonas de Mirage</summary>
-    <p class="mt-2 text-sm text-zinc-300">Se usan subzonas canónicas (Jungle, Ticket, Window, Van, Bench, Tetris, etc.). El overlay prioriza zonas chicas→grandes.</p>
-  </details>
-  <details class="rounded-2xl bg-zinc-900/60 p-4 ring-1 ring-white/10">
-    <summary class="cursor-pointer list-none font-medium">¿Qué pasa si la demo está truncada?</summary>
-    <p class="mt-2 text-sm text-zinc-300">El parser genera salida parcial y el frontend marca evidencia limitada donde corresponda.</p>
-  </details>
-</div>
+  <div class="mt-6 grid gap-4 md:grid-cols-2">
+    <div class="rounded-2xl bg-white/5 p-5 ring-1 ring-white/10">
+      <h2 class="text-lg font-semibold text-white">Como empiezo</h2>
+      <ul class="mt-3 space-y-2 text-sm text-zinc-300">
+        <li>1) Crea tu cuenta y confirma el codigo de email.</li>
+        <li>2) Sube una demo .dem de Mirage en la seccion Upload.</li>
+        <li>3) Espera el analisis y revisa tu resumen con score y quick wins.</li>
+      </ul>
+    </div>
+
+    <div class="rounded-2xl bg-white/5 p-5 ring-1 ring-white/10">
+      <h2 class="text-lg font-semibold text-white">Que obtengo</h2>
+      <ul class="mt-3 space-y-2 text-sm text-zinc-300">
+        <li>Score general 0-100 y rol sugerido.</li>
+        <li>Quick wins y drills simples para la semana.</li>
+        <li>PDF listo para compartir con tu equipo.</li>
+      </ul>
+    </div>
+
+    <div class="rounded-2xl bg-white/5 p-5 ring-1 ring-white/10">
+      <h2 class="text-lg font-semibold text-white">Si algo falla</h2>
+      <ul class="mt-3 space-y-2 text-sm text-zinc-300">
+        <li>No recibiste el codigo? Pide reenviar desde Verificar email.</li>
+        <li>Upload no avanza? Revisa que el archivo termine en .dem.</li>
+        <li>Demo muy pesada? Limite recomendado: 300 MB.</li>
+      </ul>
+    </div>
+
+    <div class="rounded-2xl bg-white/5 p-5 ring-1 ring-white/10">
+      <h2 class="text-lg font-semibold text-white">Privacidad y soporte</h2>
+      <p class="mt-3 text-sm text-zinc-300">Tus demos se usan solo para generar feedback. Si necesitas ayuda, escribe a <a href="mailto:soporte@sharpix.gg" class="text-emerald-300 hover:text-emerald-200">soporte@sharpix.gg</a> y envia el ID de tu demo.</p>
+    </div>
+  </div>
+</section>
 {% endblock %}

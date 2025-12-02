@@ -1,51 +1,90 @@
-<header class="sticky top-0 z-40 border-b border-white/10 bg-zinc-950/70 backdrop-blur">
-  <div class="mx-auto flex max-w-7xl items-center justify-between p-4">
+<header class="sticky top-0 z-40 bg-gradient-to-b from-[color-mix(in_srgb,var(--bg)_90%,#000_10%)] via-[var(--bg)] to-transparent backdrop-blur transition-colors duration-200">
+  <div class="mx-auto max-w-7xl px-4 pt-4">
+    <div class="flex items-center justify-between gap-4 rounded-2xl border border-[var(--border)] bg-[color-mix(in_srgb,var(--card)_92%,#000_8%)] px-4 py-3 shadow-[0_10px_50px_rgba(0,0,0,0.35)] ring-1 ring-[color-mix(in_srgb,var(--accent)_25%,transparent)] transition-colors duration-200">
 
-    <!-- LOGO + TITLE -->
-    <a href="{{ url_for('home') }}" class="flex items-center gap-3">
-      <img src="{{ url_for('static', filename='brand/mark.png') }}"
-           alt="Sharpix"
-           class="h-8 w-8 select-none opacity-90 transition hover:opacity-100" />
-      <div class="flex flex-col leading-tight">
-        <span class="text-sm font-semibold tracking-wide text-zinc-100">Sharpix</span>
-        <span class="text-xs text-zinc-500">CS2 Feedback · Mirage</span>
-      </div>
-    </a>
-
-    <!-- NAVIGATION -->
-    <nav class="flex items-center gap-6 text-sm text-zinc-300">
-
-      <!-- Público -->
-      <a href="{{ url_for('home') }}" class="hover:text-white transition">Inicio</a>
-      <a href="{{ url_for('summary_demo') }}" class="hover:text-white transition">Demo</a>
-      <a href="{{ url_for('home') }}#pricing" class="hover:text-white transition">Pricing</a>
-      <a href="{{ url_for('faq') }}" class="hover:text-white transition">Preguntas frecuentes</a>
-
-      <!-- Sólo con sesión -->
-      {% if current_user.is_authenticated %}
-        <a href="{{ url_for('upload') }}" class="hover:text-white transition">Upload</a>
-      {% endif %}
-
-      <!-- Divider -->
-      <span class="mx-1 h-4 w-px bg-white/10"></span>
-
-      {% if current_user.is_authenticated %}
-        <div class="flex items-center gap-3">
-          <span class="hidden sm:inline text-zinc-400">
-            Bienvenido, <strong class="text-zinc-200">{{ current_user.username }}</strong>
-          </span>
-          <a href="{{ url_for('logout') }}"
-             class="rounded-md bg-zinc-800 px-3 py-1.5 text-zinc-200 ring-1 ring-white/10 transition hover:bg-zinc-700">
-            Salir
-          </a>
+      <!-- LOGO + TITLE -->
+      <a href="{{ url_for('home') }}" class="group flex items-center gap-3">
+        <div class="relative flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--border)] bg-[color-mix(in_srgb,var(--card)_92%,#fff_8%)] shadow-[0_10px_30px_rgba(0,0,0,0.25)] transition duration-300 group-hover:border-[color-mix(in_srgb,var(--accent)_35%,var(--border))] group-hover:shadow-[0_12px_30px_rgba(16,185,129,0.18)]">
+          <div class="absolute inset-0 rounded-xl bg-gradient-to-br from-emerald-400/10 via-sky-400/10 to-indigo-400/10 blur-sm opacity-0 transition duration-300 group-hover:opacity-100"></div>
+          <img src="{{ url_for('static', filename='brand/mark.png') }}"
+               alt="Sharpix"
+               class="relative h-6 w-6 select-none opacity-90 transition group-hover:opacity-100" />
         </div>
-      {% else %}
-        <a href="{{ url_for('login') }}" class="hover:text-white transition">Ingresar</a>
-        <a href="{{ url_for('register') }}"
-           class="rounded-md bg-sky-500 px-3 py-1.5 text-white hover:bg-sky-400 transition">
-          Crear cuenta
+        <div class="flex flex-col leading-tight">
+          <span class="text-sm font-semibold tracking-wide text-[var(--text)] transition group-hover:text-white">SHARPIX</span>
+
+        </div>
+      </a>
+
+      <!-- NAVIGATION -->
+      <nav class="flex items-center gap-2 md:gap-4 rounded-full border border-[var(--border)] bg-[color-mix(in_srgb,var(--card)_90%,#fff_10%)] px-2 py-1.5 text-sm text-[var(--muted)] shadow-[0_12px_30px_rgba(0,0,0,0.25)] ring-1 ring-[color-mix(in_srgb,var(--accent)_20%,transparent)] transition-colors duration-200">
+
+        <!-- PA?blico -->
+        <a href="{{ url_for('home') }}"
+           class="relative overflow-hidden rounded-lg px-3 py-1.5 text-[var(--text)]/80 transition hover:bg-white/5 hover:text-[var(--text)] after:absolute after:inset-x-3 after:bottom-1 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:bg-gradient-to-r after:from-emerald-400 after:via-sky-400 after:to-indigo-400 after:content-[''] after:transition-transform after:duration-300 hover:after:scale-x-100">
+          Inicio
         </a>
-      {% endif %}
-    </nav>
+        <a href="{{ url_for('summary_demo') }}"
+           class="relative overflow-hidden rounded-lg px-3 py-1.5 text-[var(--text)]/80 transition hover:bg-white/5 hover:text-[var(--text)] after:absolute after:inset-x-3 after:bottom-1 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:bg-gradient-to-r after:from-emerald-400 after:via-sky-400 after:to-indigo-400 after:content-[''] after:transition-transform after:duration-300 hover:after:scale-x-100">
+          Demo
+        </a>
+        <a href="{{ url_for('pricing') }}"
+           class="relative overflow-hidden rounded-lg px-3 py-1.5 text-[var(--text)]/80 transition hover:bg-white/5 hover:text-[var(--text)] after:absolute after:inset-x-3 after:bottom-1 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:bg-gradient-to-r after:from-emerald-400 after:via-sky-400 after:to-indigo-400 after:content-[''] after:transition-transform after:duration-300 hover:after:scale-x-100">
+          Precios
+        </a>
+        <a href="{{ url_for('faq') }}"
+           class="relative overflow-hidden rounded-lg px-3 py-1.5 text-[var(--text)]/80 transition hover:bg-white/5 hover:text-[var(--text)] after:absolute after:inset-x-3 after:bottom-1 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:bg-gradient-to-r after:from-emerald-400 after:via-sky-400 after:to-indigo-400 after:content-[''] after:transition-transform after:duration-300 hover:after:scale-x-100">
+          Preguntas frecuentes
+        </a>
+
+        <!-- SA3lo con sesiA3n -->
+        {% if current_user.is_authenticated %}
+          <a href="{{ url_for('upload') }}"
+             class="relative overflow-hidden rounded-lg px-3 py-1.5 text-[var(--text)]/80 transition hover:bg-white/5 hover:text-[var(--text)] after:absolute after:inset-x-3 after:bottom-1 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:bg-gradient-to-r after:from-emerald-400 after:via-sky-400 after:to-indigo-400 after:content-[''] after:transition-transform after:duration-300 hover:after:scale-x-100">
+            Upload
+          </a>
+        {% endif %}
+
+        <!-- Divider -->
+        <div class="hidden h-6 w-px bg-[var(--border)] sm:block"></div>
+
+        {% if current_user.is_authenticated %}
+          <div class="flex items-center gap-2 sm:gap-3">
+            <span class="hidden sm:inline text-[var(--muted)]">
+              Bienvenido, <strong class="text-[var(--text)]">{{ current_user.username }}</strong>
+            </span>
+           <a href="{{ url_for('logout') }}"
+             class="relative overflow-hidden rounded-lg px-3 py-1.5 text-[var(--text)] ring-1 ring-[var(--border)] transition hover:bg-white/10 hover:text-[var(--text)] before:absolute before:inset-0 before:bg-gradient-to-r before:from-emerald-400/10 before:to-sky-400/10 before:opacity-0 before:content-[''] before:transition before:duration-300 hover:before:opacity-100">
+              Salir
+            </a>
+          </div>
+        {% else %}
+          <a href="{{ url_for('login') }}"
+             class="relative overflow-hidden rounded-lg px-3 py-1.5 text-[var(--text)] ring-1 ring-[var(--border)] transition hover:bg-white/10 hover:text-[var(--text)] before:absolute before:inset-0 before:bg-gradient-to-r before:from-emerald-400/10 before:to-sky-400/10 before:opacity-0 before:content-[''] before:transition before:duration-300 hover:before:opacity-100">
+            Ingresar
+          </a>
+          <a href="{{ url_for('register') }}"
+             class="group relative inline-flex items-center gap-2 overflow-hidden rounded-lg bg-gradient-to-r from-emerald-500 via-emerald-400 to-sky-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-emerald-500/25 transition hover:-translate-y-[1px] hover:shadow-emerald-400/40">
+            <span class="relative">Crear cuenta</span>
+            <span class="relative inline-flex h-2 w-2 rounded-full bg-white/70 shadow-[0_0_0_6px_rgba(255,255,255,0.08)] group-hover:animate-ping"></span>
+          </a>
+        {% endif %}
+
+        <!-- Theme toggle -->
+        <button id="theme-toggle"
+                type="button"
+                class="relative inline-flex items-center gap-2 rounded-lg border border-[var(--border)] bg-[color-mix(in_srgb,var(--card)_90%,#fff_10%)] px-3 py-1.5 text-sm text-[var(--text)] shadow-[0_8px_20px_rgba(0,0,0,0.18)] transition hover:border-[color-mix(in_srgb,var(--accent)_25%,var(--border))] hover:shadow-[0_10px_24px_rgba(16,185,129,0.18)] focus:outline-none">
+          <span class="inline-flex h-4 w-4 items-center justify-center" aria-hidden="true">
+            <svg id="icon-sun" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v2m0 14v2m9-9h-2M5 12H3m15.364 6.364l-1.414-1.414M7.05 7.05 5.636 5.636m12.728 0-1.414 1.414M7.05 16.95l-1.414 1.414M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+            <svg id="icon-moon" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12.79A9 9 0 1111.21 3a7 7 0 109.79 9.79z" />
+            </svg>
+          </span>
+          <span id="theme-label" class="text-xs">Tema</span>
+        </button>
+      </nav>
+    </div>
   </div>
 </header>

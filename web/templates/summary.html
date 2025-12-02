@@ -1,81 +1,69 @@
-{# templates/summary.html #}
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 {% set has_fb = fb is defined and fb %}
 {% block content %}
 <div class="mx-auto max-w-6xl px-5 py-8 space-y-8" x-data>
 
-  <!-- Header / Match basics (actualizado) -->
-  <section id="summary-header" class="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-6 shadow-lg">
+  <!-- Header / Match basics -->
+  <section id="summary-header"
+           class="rounded-2xl p-6 shadow-[0_10px_30px_rgba(15,23,42,0.08)] border border-[var(--border)] text-[var(--text)] surface">
     {% set score100 = (has_fb and (fb.summary.score100|int) or 83) %}
     {% set score5 = (score100 / 20.0) %}
     {% set score5_txt = "%.1f"|format(score5) %}
 
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-      <div>
-        <div class="inline-flex items-center gap-2">
-          <img src="{{ url_for('static', filename='brand/mark.png') }}" alt="Sharpix" class="w-7 h-7 rounded-lg"/>
-          <span class="text-xs tracking-wide px-2 py-1 rounded-full bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-400/30">Procesado automáticamente</span>
+    <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div class="space-y-2">
+
+        <div class="space-y-1">
+          <h1 class="text-2xl md:text-3xl font-bold text-[var(--text)]" id="map-title">
+            {{ has_fb and fb.summary.map or "Mirage" }}
+          </h1>
+          <p class="text-[var(--muted)] text-sm md:text-base">
+            Score: <b id="score">{{ has_fb and fb.summary.score or "16-12" }}</b>
+            · Duracion: <span id="duration">{{ has_fb and fb.summary.duration or "45:32" }}</span>
+            · Rendimiento: <b id="score100">{{ score100 }}</b>/100
+          </p>
         </div>
 
-        <!-- Título: sólo el mapa -->
-        <h1 class="mt-2 text-2xl md:text-3xl font-bold" id="map-title">
-          {{ has_fb and fb.summary.map or "Mirage" }}
-        </h1>
-
-        <!-- Meta -->
-        <p class="text-slate-300">
-          Score: <b id="score">{{ has_fb and fb.summary.score or "16-12" }}</b>
-          · Duración: <span id="duration">{{ has_fb and fb.summary.duration or "45:32" }}</span>
-          · Rendimiento: <b id="score100">{{ score100 }}</b>/100
-        </p>
-
-        <!-- Score moderno 0–5 -->
-        <div class="mt-3 flex items-center gap-3">
-          <!-- Chip -->
-          <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl
-                       bg-gradient-to-r from-emerald-500 to-sky-500 text-white shadow-sm">
+        <div class="flex flex-col gap-2 md:flex-row md:items-center md:gap-3">
+          <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-sky-500 text-white shadow-sm">
             <span class="text-base font-semibold" id="score5-chip">{{ score5_txt }}</span>
             <span class="text-xs opacity-90">/ 5</span>
           </span>
 
-          <!-- Barra con marcas -->
-          <div class="flex-1">
-            <div class="relative w-full h-2 rounded-full bg-white/10 overflow-hidden">
+          <div class="flex-1 min-w-[220px]">
+            <div class="relative w-full h-2 rounded-full bg-[var(--border)] overflow-hidden">
               <div id="score-bar" class="absolute inset-0 bg-gradient-to-r from-emerald-400 to-sky-400"
                    style="width: {{ score100 }}%;"></div>
               <div class="absolute inset-0 flex justify-between">
                 {% for _ in range(5) %}
-                  <span class="h-2 w-px bg-white/20"></span>
+                  <span class="h-2 w-px bg-black/10"></span>
                 {% endfor %}
               </div>
             </div>
-            <div class="flex justify-between text-[10px] text-white/60 mt-1">
+            <div class="flex justify-between text-[10px] text-[var(--muted)] mt-1">
               <span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
             </div>
           </div>
-        </div>
 
-        <!-- Rol sugerido (NUEVO) -->
-        <div class="mt-3" id="role-suggested">
-          <span id="role-pill"
-                class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl
-                       text-white ring-1 ring-white/10 bg-white/10 backdrop-blur-sm">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 opacity-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M5 13l4 4L19 7"/>
-            </svg>
-            <span>Rol sugerido: <b id="role-name">Rifler</b></span>
-          </span>
+          <div class="mt-1" id="role-suggested">
+            <span id="role-pill"
+                  class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-emerald-900 bg-emerald-50 ring-1 ring-emerald-200">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 opacity-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+              </svg>
+              <span>Rol sugerido: <b id="role-name">Rifler</b></span>
+            </span>
+          </div>
         </div>
       </div>
 
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-3 self-start md:self-center">
         <a href="{{ url_for('rounds_demo') if (not has_fb or not (fb.summary.match_id is defined and fb.summary.match_id)) else url_for('rounds_with_id', match_id=fb.summary.match_id) }}"
-           class="inline-flex items-center justify-center rounded-xl px-4 py-2 bg-white/10 hover:bg-white/15 text-white backdrop-blur transition">
+           class="inline-flex items-center justify-center rounded-lg px-4 py-2 border border-[var(--border)] text-[var(--text)] hover:bg-[color-mix(in_srgb,var(--card)_90%,#fff_10%)] transition">
           Ver por ronda
         </a>
         <button type="button"
-                class="inline-flex items-center justify-center rounded-xl px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white transition"
+                class="inline-flex items-center justify-center rounded-lg px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white transition"
                 onclick="window.print()">
           Exportar (PDF)
         </button>
@@ -87,36 +75,34 @@
   {% set sides = has_fb and fb.sides or {} %}
   {% set sdata = sides.sides if sides and sides.sides is defined else {} %}
   <section class="space-y-3">
-    <h2 class="text-xl md:text-2xl font-semibold text-white tracking-tight drop-shadow-[0_1px_0_rgba(0,0,0,.45)]">
-      Rendimiento por lado
-    </h2>
+    <h2 class="text-xl md:text-2xl font-semibold text-[var(--text)] tracking-tight">Rendimiento por lado</h2>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       {% for side_code, meta in {"T": sdata.get("T", {}), "CT": sdata.get("CT", {})}.items() %}
-      <div class="p-4 rounded-xl bg-white/5 border border-white/10">
+      <div class="p-4 rounded-xl surface shadow-[0_8px_24px_rgba(15,23,42,0.06)]">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
-            <span class="inline-flex items-center justify-center h-8 w-8 rounded-full
-                         {% if side_code == 'T' %}bg-amber-500/20 text-amber-200{% else %}bg-sky-500/20 text-sky-200{% endif %}">
+            <span class="inline-flex items-center justify-center h-8 w-8 rounded-full text-sm font-semibold
+                         {% if side_code == 'T' %}bg-amber-100 text-amber-700{% else %}bg-sky-100 text-sky-700{% endif %}">
               {{ side_code }}
             </span>
             <div>
-              <p class="text-sm text-white/80 font-semibold">Rondas: {{ meta.rounds or 0 }}</p>
-              <p class="text-xs text-white/60">Ganadas: {{ meta.won or 0 }}</p>
+              <p class="text-sm text-[var(--text)] font-semibold">Rondas: {{ meta.rounds or 0 }}</p>
+              <p class="text-xs text-[var(--muted)]">Ganadas: {{ meta.won or 0 }}</p>
             </div>
           </div>
           <div class="text-right">
-            <p class="text-2xl font-bold text-white">{{ (meta.win_rate or 0) }}%</p>
-            <p class="text-xs text-white/60">Win rate</p>
+            <p class="text-2xl font-bold text-[var(--text)]">{{ (meta.win_rate or 0) }}%</p>
+            <p class="text-xs text-[var(--muted)]">Win rate</p>
           </div>
         </div>
-        <div class="mt-3 grid grid-cols-2 gap-2 text-xs text-white/70">
-          <div class="p-2 rounded-lg bg-white/5 border border-white/5">
-            <p class="text-white font-semibold text-sm">{{ meta.plants or 0 }}</p>
-            <p class="text-white/70">Plants</p>
+        <div class="mt-3 grid grid-cols-2 gap-2 text-xs text-[var(--text)]/90">
+          <div class="p-2 rounded-lg border border-[var(--border)] bg-[color-mix(in_srgb,var(--card)_90%,#fff_10%)]">
+            <p class="text-[var(--text)] font-semibold text-sm">{{ meta.plants or 0 }}</p>
+            <p class="text-[var(--muted)]">Plants</p>
           </div>
-          <div class="p-2 rounded-lg bg-white/5 border border-white/5">
-            <p class="text-white font-semibold text-sm">{{ meta.plant_conv or 0 }}%</p>
-            <p class="text-white/70">Conv. plants</p>
+          <div class="p-2 rounded-lg border border-[var(--border)] bg-[color-mix(in_srgb,var(--card)_90%,#fff_10%)]">
+            <p class="text-[var(--text)] font-semibold text-sm">{{ meta.plant_conv or 0 }}%</p>
+            <p class="text-[var(--muted)]">Conv. plants</p>
           </div>
         </div>
       </div>
@@ -126,22 +112,20 @@
 
   <!-- KPI grid -->
   <section class="space-y-4">
-    <h2 class="text-xl md:text-2xl font-semibold text-white tracking-tight drop-shadow-[0_1px_0_rgba(0,0,0,.45)]">
-      Métricas clave
-    </h2>
+    <h2 class="text-xl md:text-2xl font-semibold text-[var(--text)] tracking-tight">Metricas clave</h2>
     <div id="kpi-grid" class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
       {% set kpis = has_fb and fb.kpis or [
         {"name":"Kills / Deaths","value":"1.15","label":"Buen rendimiento"},
-        {"name":"Eficiencia de Trades","value":"72%","label":"🟢 Buena"},
-        {"name":"Control de Mid","value":"58%","label":"🟠 Inestable"},
-        {"name":"Uso de Utilidades","value":"41%","label":"🔴 Bajo"},
+        {"name":"Eficiencia de Trades","value":"72%","label":"Buena"},
+        {"name":"Control de Mid","value":"58%","label":"Inestable"},
+        {"name":"Uso de Utilidades","value":"41%","label":"Bajo"},
         {"name":"Plant/Defuse","value":"62%","label":"Correcto"}
       ] %}
       {% for kpi in kpis %}
-      <div class="group p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800/80 shadow-sm hover:shadow-md transition">
-        <p class="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">{{ kpi.name }}</p>
-        <p class="mt-1 text-2xl font-bold text-slate-900 dark:text-white">{{ kpi.value }}</p>
-        <p class="text-xs text-slate-500 dark:text-slate-400">{{ kpi.label }}</p>
+      <div class="group p-4 rounded-xl surface shadow-[0_8px_24px_rgba(15,23,42,0.06)] hover:shadow-[0_10px_28px_rgba(15,23,42,0.09)] transition">
+        <p class="text-xs uppercase tracking-wide text-[var(--muted)]">{{ kpi.name }}</p>
+        <p class="mt-1 text-2xl font-bold text-[var(--text)]">{{ kpi.value }}</p>
+        <p class="text-xs text-[var(--muted)]">{{ kpi.label }}</p>
       </div>
       {% endfor %}
     </div>
@@ -149,53 +133,42 @@
 
   <!-- Strengths / Weaknesses / Quick Wins -->
   <section class="space-y-4">
-    <h2 class="text-xl md:text-2xl font-semibold text-white tracking-tight drop-shadow-[0_1px_0_rgba(0,0,0,.45)]">
-      Diagnóstico táctico
-    </h2>
+    <h2 class="text-xl md:text-2xl font-semibold text-[var(--text)] tracking-tight">Diagnostico tactico</h2>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="insights-grid">
 
       {% set strengths = has_fb and fb.insights.strengths or [
         "Control temprano de B",
-        "Coordinación en retakes",
+        "Coordinacion en retakes",
         "Coberturas cruzadas efectivas en A"
       ] %}
       {% set weaknesses = has_fb and fb.insights.weaknesses or [
         "Falta de humo en CT",
         "Peek sin flash en mid",
-        "Rotaciones tardías desde B"
+        "Rotaciones tardias desde B"
       ] %}
       {% set quick_wins = has_fb and fb.insights.quick_wins or [
-        "Practicar retake B (2v3) — 15 min",
-        "Timings de rotación mid→A — 10 min",
-        "Set de humos A site — 10 min"
+        "Practicar retake B (2v3) - 15 min",
+        "Timings de rotacion mid->A - 10 min",
+        "Set de humos A site - 10 min"
       ] %}
 
-      <!-- Fortalezas -->
-      <div class="rounded-2xl p-5 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200/60 dark:border-emerald-900/40">
-        <h3 class="font-semibold text-emerald-900 dark:text-emerald-200 flex items-center gap-2">
-          💪 Puntos fuertes
-        </h3>
-        <ul class="mt-3 list-disc pl-5 text-sm text-emerald-950/80 dark:text-emerald-100/90 space-y-1" id="strengths">
+      <div class="rounded-2xl p-5 border border-[color-mix(in_srgb,var(--accent)_45%,var(--border))] bg-[color-mix(in_srgb,var(--card)_88%,#10b98120)] shadow-[0_8px_24px_rgba(15,23,42,0.08)]">
+        <h3 class="font-semibold text-[var(--text)] flex items-center gap-2">Puntos fuertes</h3>
+        <ul class="mt-3 list-disc pl-5 text-sm text-[var(--text)]/90 space-y-1" id="strengths">
           {% for item in strengths %}<li>{{ item }}</li>{% endfor %}
         </ul>
       </div>
 
-      <!-- Debilidades -->
-      <div class="rounded-2xl p-5 bg-amber-50 dark:bg-amber-900/20 border border-amber-200/60 dark:border-amber-900/40">
-        <h3 class="font-semibold text-amber-900 dark:text-amber-200 flex items-center gap-2">
-          ⚠️ Puntos débiles
-        </h3>
-        <ul class="mt-3 list-disc pl-5 text-sm text-amber-950/80 dark:text-amber-100/90 space-y-1" id="weaknesses">
+      <div class="rounded-2xl p-5 border border-[color-mix(in_srgb,#f59e0b_35%,var(--border))] bg-[color-mix(in_srgb,var(--card)_90%,#f59e0b1a)] shadow-[0_8px_24px_rgba(15,23,42,0.05)]">
+        <h3 class="font-semibold text-[var(--text)] flex items-center gap-2">Puntos debiles</h3>
+        <ul class="mt-3 list-disc pl-5 text-sm text-[var(--text)]/90 space-y-1" id="weaknesses">
           {% for item in weaknesses %}<li>{{ item }}</li>{% endfor %}
         </ul>
       </div>
 
-      <!-- Quick Wins -->
-      <div class="rounded-2xl p-5 bg-sky-50 dark:bg-sky-900/20 border border-sky-200/60 dark:border-sky-900/40">
-        <h3 class="font-semibold text-sky-900 dark:text-sky-200 flex items-center gap-2">
-          ⚡ Quick wins
-        </h3>
-        <ul class="mt-3 list-disc pl-5 text-sm text-sky-950/80 dark:text-sky-100/90 space-y-1" id="quickwins">
+      <div class="rounded-2xl p-5 border border-[color-mix(in_srgb,var(--accent-2)_35%,var(--border))] bg-[color-mix(in_srgb,var(--card)_90%,#0ea5e91a)] shadow-[0_8px_24px_rgba(15,23,42,0.05)]">
+        <h3 class="font-semibold text-[var(--text)] flex items-center gap-2">Quick wins</h3>
+        <ul class="mt-3 list-disc pl-5 text-sm text-[var(--text)]/90 space-y-1" id="quickwins">
           {% for item in quick_wins %}<li>{{ item }}</li>{% endfor %}
         </ul>
       </div>
@@ -204,10 +177,8 @@
 
   <!-- Visual / Heatmap placeholder -->
   <section class="space-y-2">
-    <h2 class="text-xl md:text-2xl font-semibold text-white tracking-tight drop-shadow-[0_1px_0_rgba(0,0,0,.45)]">
-      Mapa de calor K/D
-    </h2>
-    <div class="rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow">
+    <h2 class="text-xl md:text-2xl font-semibold text-[var(--text)] tracking-tight">Mapa de calor K/D</h2>
+    <div class="rounded-2xl overflow-hidden border border-[var(--border)] shadow-[0_10px_30px_rgba(15,23,42,0.08)]">
       <img id="heatmap-img"
            src="{{ url_for('static', filename='brand/heatmap_mock.png') }}"
            alt="Heatmap Mirage (placeholder)"
@@ -218,24 +189,18 @@
 
   <!-- Sugerencias de entrenamiento (extra para pantallazo) -->
   <section class="space-y-4">
-    <h2 class="text-xl md:text-2xl font-semibold text-white tracking-tight drop-shadow-[0_1px_0_rgba(0,0,0,.45)]">
-      Sugerencias de entrenamiento
-    </h2>
+    <h2 class="text-xl md:text-2xl font-semibold text-[var(--text)] tracking-tight">Sugerencias de entrenamiento</h2>
     <div id="training-list" class="grid md:grid-cols-2 gap-4">
       {% set training = has_fb and fb.training or [
-        {"title":"Set de humos A (Mirage)","tip":"Pulir lineup desde Tetris y Palace · objetivo: consistencia 90%."},
-        {"title":"Retake B (2v3)","tip":"Roles claros y flash pop desde short · 3 repeticiones x ronda."},
-        {"title":"Peeks en Mid con flash","tip":"Evitar dry peeks en timings previsibles · usar one-way humo top mid."},
-        {"title":"Rotaciones más tempranas","tip":"Definir callee + trigger de rotación al primer info de presencia."}
+        {"title":"Set de humos A (Mirage)","tip":"Pulir lineup desde Tetris y Palace - objetivo: consistencia 90%."},
+        {"title":"Retake B (2v3)","tip":"Roles claros y flash pop desde short - 3 repeticiones por sesion."},
+        {"title":"Peeks en Mid con flash","tip":"Evitar dry peeks en timings previsibles - usar one-way top mid."},
+        {"title":"Rotaciones mas tempranas","tip":"Definir callee + trigger de rotacion al primer info de presencia."}
       ] %}
       {% for t in training %}
-      <div class="rounded-2xl p-4
-        border border-emerald-300/40
-        bg-gradient-to-br from-emerald-500/15 to-sky-500/15
-        backdrop-blur-md
-        transition-all duration-300 hover:-translate-y-0.5 hover:border-emerald-400 hover:shadow-lg">
-        <p class="font-medium text-white">{{ t.title }}</p>
-        <p class="text-sm text-slate-200/90">{{ t.tip }}</p>
+      <div class="rounded-2xl p-4 border border-[color-mix(in_srgb,var(--accent)_35%,var(--border))] bg-[color-mix(in_srgb,var(--card)_95%,#fff_8%)] backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 hover:border-[color-mix(in_srgb,var(--accent)_50%,var(--border))] hover:shadow-[0_10px_26px_rgba(15,23,42,0.08)]">
+        <p class="font-medium text-[var(--text)]">{{ t.title }}</p>
+        <p class="text-sm text-[var(--muted)]">{{ t.tip }}</p>
       </div>
       {% endfor %}
     </div>
@@ -243,9 +208,7 @@
 
 </div>
 
-<!-- ====== LÓGICA DEL ROL SUGERIDO (para real + fixtures) ====== -->
 <script>
-/** Lee KPIs y define un rol sugerido. Espera value100 (0..100) por KPI id. */
 function updateRole(kpis) {
   try {
     if (!Array.isArray(kpis) || !kpis.length) return;
@@ -275,9 +238,7 @@ function updateRole(kpis) {
     const name = document.getElementById('role-name');
     if (pill && name) {
       name.textContent = best.label;
-      pill.className =
-        "inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-white ring-1 backdrop-blur-sm " +
-        best.bg + " " + best.ring + " ring-white/10";
+      pill.className = "inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-white ring-1 backdrop-blur-sm " + best.bg + " " + best.ring + " ring-white/10";
     }
   } catch (e) {
     console.warn('updateRole error', e);
@@ -286,7 +247,6 @@ function updateRole(kpis) {
 </script>
 
 {% if has_fb and fb.summary and fb.summary.suggested_role %}
-<!-- Rol sugerido provisto por backend -->
 <script>
   (function(){
     const role = {{ fb.summary.suggested_role | tojson }};
@@ -294,9 +254,8 @@ function updateRole(kpis) {
     const name = document.getElementById('role-name');
     if (pill && name) { name.textContent = role; }
   })();
-  </script>
+</script>
 {% elif has_fb and fb.kpis %}
-<!-- KPIs reales desde Flask -->
 <script>
   updateRole({{ fb.kpis | tojson | safe }});
 </script>
@@ -304,44 +263,38 @@ function updateRole(kpis) {
 
 {% if not has_fb %}
 <script>
-/* Fallback: si no llega fb desde Flask, cargamos fixtures para sacar capturas */
 (async () => {
   try {
     const res = await fetch("{{ url_for('static', filename='fixtures.json') }}", {cache: "no-store"});
     if (!res.ok) return;
     const fb = await res.json();
 
-    // Header (sin team)
     const setText = (sel, val) => { const el = document.querySelector(sel); if (el && val != null) el.textContent = val; };
     setText("#map-title", fb?.summary?.map ?? "Mirage");
     setText("#score", fb?.summary?.score ?? "16-12");
     setText("#duration", fb?.summary?.duration ?? "45:32");
     const s100 = Number(fb?.summary?.score100 ?? 83);
     setText("#score100", String(s100));
-    // barra y chip 0–5
     const bar = document.getElementById("score-bar");
     if (bar) bar.style.width = (Math.max(0, Math.min(100, s100))) + "%";
     const chip = document.getElementById("score5-chip");
     if (chip) chip.textContent = (s100/20).toFixed(1);
 
-    // KPIs
     const kpiGrid = document.getElementById("kpi-grid");
     if (kpiGrid && Array.isArray(fb?.kpis)) {
       kpiGrid.innerHTML = "";
       for (const k of fb.kpis) {
         const card = document.createElement("div");
-        card.className = "group p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800/80 shadow-sm hover:shadow-md transition";
+        card.className = "group p-4 rounded-xl surface shadow-[0_8px_24px_rgba(15,23,42,0.06)] hover:shadow-[0_10px_28px_rgba(15,23,42,0.09)] transition";
         card.innerHTML = `
-          <p class="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">${k.name}</p>
-          <p class="mt-1 text-2xl font-bold text-slate-900 dark:text-white">${k.value}</p>
-          <p class="text-xs text-slate-500 dark:text-slate-400">${k.label ?? ""}</p>`;
+          <p class="text-xs uppercase tracking-wide text-[var(--muted)]">${k.name}</p>
+          <p class="mt-1 text-2xl font-bold text-[var(--text)]">${k.value}</p>
+          <p class="text-xs text-[var(--muted)]">${k.label ?? ""}</p>`;
         kpiGrid.appendChild(card);
       }
-      // Rol sugerido con fixtures
       updateRole(fb.kpis);
     }
 
-    // Insights
     const renderList = (id, arr) => {
       const ul = document.getElementById(id);
       if (!ul || !Array.isArray(arr)) return;
@@ -356,19 +309,15 @@ function updateRole(kpis) {
     renderList("weaknesses", fb?.insights?.weaknesses);
     renderList("quickwins", fb?.insights?.quick_wins);
 
-    // Training
     const training = fb?.training;
     const tList = document.getElementById("training-list");
     if (tList && Array.isArray(training)) {
       tList.innerHTML = "";
       for (const t of training) {
         const div = document.createElement("div");
-        div.className = "rounded-2xl p-4 border border-emerald-300/40 \
-                 bg-gradient-to-br from-emerald-500/15 to-sky-500/15 \
-                 backdrop-blur-md transition-all duration-300 \
-                 hover:-translate-y-0.5 hover:border-emerald-400 hover:shadow-lg";
-        div.innerHTML = `<p class="font-medium text-white">${t.title}</p>
-                 <p class="text-sm text-slate-200/90">${t.tip}</p>`;
+        div.className = "rounded-2xl p-4 border border-[color-mix(in_srgb,var(--accent)_35%,var(--border))] bg-[color-mix(in_srgb,var(--card)_95%,#fff_8%)] backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 hover:border-[color-mix(in_srgb,var(--accent)_50%,var(--border))] hover:shadow-[0_10px_26px_rgba(15,23,42,0.08)]";
+        div.innerHTML = `<p class="font-medium text-[var(--text)]">${t.title}</p>
+                 <p class="text-sm text-[var(--muted)]">${t.tip}</p>`;
         tList.appendChild(div);
       }
     }

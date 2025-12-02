@@ -12,25 +12,84 @@
       theme: { extend: { borderRadius: { '2xl': '1rem' } } }
     }
   </script>
+  <script>
+    // Aplica tema antes del primer render para evitar flash
+    (function() {
+      try {
+        const stored = localStorage.getItem("theme");
+        const prefersLight = window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches;
+        const theme = stored || (prefersLight ? "light" : "dark");
+        if (theme === "light") {
+          document.documentElement.classList.add("theme-light");
+        }
+      } catch (e) {
+        /* no-op */
+      }
+    })();
+  </script>
 
   <!-- Chart.js (CDN) -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
+    /* Tokens de color para tema */
+    :root {
+      --bg: #020617;
+      --bg-soft: #0b1224;
+      --card: rgba(15,23,42,0.9);
+      --card-elevated: rgba(24,31,53,0.85);
+      --border: rgba(255,255,255,0.08);
+      --text: #e2e8f0;
+      --text-dim: #cbd5e1;
+      --muted: #94a3b8;
+      --accent: #10b981;
+      --accent-2: #38bdf8;
+      --shadow: 0 10px 40px rgba(0,0,0,0.35);
+      --mesh-bg: radial-gradient(60% 40% at 15% 20%, rgba(16,185,129,.16), transparent),
+                  radial-gradient(55% 45% at 85% 25%, rgba(56,189,248,.14), transparent),
+                  radial-gradient(50% 60% at 50% 80%, rgba(79,70,229,.12), transparent);
+    }
+    .theme-light {
+      --bg: #f6f8fb;
+      --bg-soft: #e9edf5;
+      --card: rgba(255,255,255,0.92);
+      --card-elevated: rgba(255,255,255,0.98);
+      --border: rgba(15,23,42,0.08);
+      --text: #0f172a;
+      --text-dim: #1e293b;
+      --muted: #475569;
+      --accent: #0ea5e9;
+      --accent-2: #6366f1;
+      --shadow: 0 10px 30px rgba(15,23,42,0.12);
+      --mesh-bg: radial-gradient(60% 40% at 15% 20%, rgba(94,234,212,.35), transparent),
+                  radial-gradient(55% 45% at 85% 25%, rgba(125,211,252,.28), transparent),
+                  radial-gradient(50% 60% at 50% 80%, rgba(59,130,246,.20), transparent);
+    }
+
     /* tamanio gigante y fluido para el brand */
     .brand-xxl { font-size: clamp(48px, 8vw, 112px); line-height: .95; letter-spacing: -0.02em; }
     .text-gradient { background: linear-gradient(90deg,#38bdf8,#a78bfa,#f472b6); -webkit-background-clip:text; background-clip:text; color: transparent; }
     .glow-soft { text-shadow: 0 6px 40px rgba(56,189,248,.25); }
+    .surface { background: var(--card); border: 1px solid var(--border); box-shadow: var(--shadow); color: var(--text); }
+    .mesh-bg {
+      background-image:
+        linear-gradient(180deg,
+          color-mix(in_srgb, var(--bg) 90%, #fff 10%),
+          color-mix(in_srgb, var(--bg) 80%, #fff 20%)),
+        var(--mesh-bg);
+      background-repeat: no-repeat;
+      background-size: cover;
+      transition: background-image .3s ease;
+    }
   </style>
 
   {% block head %}{% endblock %}
 </head>
-<body class="bg-zinc-950 text-white">
+<body class="bg-[var(--bg)] text-[var(--text)] transition-colors duration-200">
   <!-- Navbar -->
   {% include "partials/_navbar.html" %}
   <!-- BG: mesh gradients -->
   <div aria-hidden="true"
-      class="pointer-events-none fixed inset-0 -z-50
-              bg-[radial-gradient(60%_40%_at_15%_20%,rgba(16,185,129,.16),transparent),radial-gradient(55%_45%_at_85%_25%,rgba(56,189,248,.14),transparent),radial-gradient(50%_60%_at_50%_80%,rgba(79,70,229,.12),transparent)]">
+      class="pointer-events-none fixed inset-0 -z-50 mesh-bg">
   </div>
 
   <!-- BG: noise overlay (muy sutil) -->
@@ -56,8 +115,8 @@
     {% block content %}{% endblock %}
   </main>
 
-  <footer class="mt-12 text-center text-sm text-slate-400 py-6 border-t border-white/10">
-    <span class="font-semibold text-white">Sharpix</span> - Tecnologia y tactica para potenciar tu juego.
+  <footer class="mt-12 text-center text-sm text-[var(--muted)] py-6 border-t border-[var(--border)]">
+    <span class="font-semibold text-[var(--text)]">Sharpix</span> - Tecnologia y tactica para potenciar tu juego.
   </footer>
 
   <!-- Inyeccion opcional de fixtures -->
@@ -66,5 +125,39 @@
   </script>
 
   {% block scripts %}{% endblock %}
+  <script>
+    (function() {
+      const root = document.documentElement;
+      const btn = document.getElementById("theme-toggle");
+      if (!btn) return;
+
+      const iconSun = document.getElementById("icon-sun");
+      const iconMoon = document.getElementById("icon-moon");
+      const label = document.getElementById("theme-label");
+
+      const apply = (theme) => {
+        if (theme === "light") {
+          root.classList.add("theme-light");
+          if (label) label.textContent = "Claro";
+          if (iconSun) iconSun.classList.remove("hidden");
+          if (iconMoon) iconMoon.classList.add("hidden");
+        } else {
+          root.classList.remove("theme-light");
+          if (label) label.textContent = "Oscuro";
+          if (iconSun) iconSun.classList.add("hidden");
+          if (iconMoon) iconMoon.classList.remove("hidden");
+        }
+        try { localStorage.setItem("theme", theme); } catch (e) {}
+      };
+
+      const current = root.classList.contains("theme-light") ? "light" : "dark";
+      apply(current);
+
+      btn.addEventListener("click", () => {
+        const next = root.classList.contains("theme-light") ? "dark" : "light";
+        apply(next);
+      });
+    })();
+  </script>
 </body>
 </html>

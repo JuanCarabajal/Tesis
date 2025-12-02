@@ -7,16 +7,19 @@
   .auth-shell {
     position: relative;
     min-height: 100vh;
-    background: linear-gradient(145deg, #0b0e18 0%, #0f172a 55%, #0b0e18 100%);
+    background: linear-gradient(140deg,
+      color-mix(in_srgb,var(--bg)_75%,#e7f7f4 25%) 0%,
+      color-mix(in_srgb,#e0f2fe_60%,#ffffff 40%) 45%,
+      color-mix(in_srgb,#dbeafe_55%,#f8fafc 45%) 100%);
     overflow: hidden;
   }
   .auth-shell::before {
     content:"";
     position:absolute; inset:0; z-index:0;
     background:
-      radial-gradient(60% 50% at 20% 20%, rgba(16,185,129,0.12), transparent),
-      radial-gradient(55% 50% at 80% 15%, rgba(56,189,248,0.12), transparent),
-      radial-gradient(45% 55% at 50% 85%, rgba(79,70,229,0.10), transparent);
+      radial-gradient(60% 50% at 20% 20%, rgba(16,185,129,0.16), transparent),
+      radial-gradient(55% 50% at 80% 15%, rgba(56,189,248,0.18), transparent),
+      radial-gradient(45% 55% at 50% 85%, rgba(59,130,246,0.14), transparent);
     pointer-events: none;
   }
   .auth-shell::after {
@@ -42,14 +45,15 @@
   }
   .hero-panel {
     background:
-      linear-gradient(135deg, rgba(16,185,129,0.15), rgba(59,130,246,0.08)),
+      linear-gradient(135deg, rgba(16,185,129,0.12), rgba(59,130,246,0.08)),
       radial-gradient(circle at 30% 30%, rgba(56,189,248,0.08), transparent 45%),
-      #0d161f;
-    border: 1px solid rgba(255,255,255,0.05);
-    box-shadow: 0 30px 70px rgba(0,0,0,0.35);
+      color-mix(in_srgb,var(--card)_92%,#e8eef7_8%);
+    border: 1px solid var(--border);
+    box-shadow: 0 30px 70px rgba(15,23,42,0.18);
     border-radius: 28px;
     position: relative;
     overflow: hidden;
+    color: var(--text);
   }
   .hero-panel::after {
     content:"";
@@ -62,9 +66,9 @@
     pointer-events: none;
   }
   .form-card {
-    background: linear-gradient(180deg, rgba(24,24,27,0.9), rgba(17,24,39,0.85));
-    border: 1px solid rgba(255,255,255,0.06);
-    box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+    background: color-mix(in_srgb,var(--card)_94%,#fff_6%);
+    border: 1px solid var(--border);
+    box-shadow: 0 20px 50px rgba(15,23,42,0.18);
     border-radius: 20px;
   }
 </style>
@@ -75,21 +79,21 @@
   <div class="auth-content grid w-full max-w-6xl gap-8 lg:grid-cols-[1.1fr,1fr]">
 
     <!-- Hero panel -->
-    <div class="hero-panel p-8 md:p-10 text-slate-100">
+    <div class="hero-panel p-8 md:p-10 text-[var(--text)]">
       <div class="flex items-center gap-3 mb-6">
         <img src="{{ url_for('static', filename='brand/mark.png') }}" class="h-10 w-10" alt="Sharpix">
         <div>
           <p class="text-xs uppercase tracking-[0.2em] text-emerald-200/80">CS2 Feedback</p>
-          <p class="text-sm text-slate-300">Mirage · Entrenamiento asistido</p>
+          <p class="text-sm text-[var(--muted)]">Mirage · Entrenamiento asistido</p>
         </div>
       </div>
 
       <h1 class="text-3xl md:text-4xl font-bold leading-tight">Entrenamiento asistido por datos</h1>
-      <p class="mt-3 text-slate-200/90 max-w-xl">
+      <p class="mt-3 text-[var(--muted)] max-w-xl">
         Subí tus demos, identificá patrones de trade, timings y utilidades. Recibí quick wins listos para practicar y comparte el PDF con tu equipo.
       </p>
 
-      <div class="mt-6 space-y-3 text-slate-200/85 text-sm">
+      <div class="mt-6 space-y-3 text-[var(--muted)] text-sm">
         <div class="flex items-start gap-3">
           <span class="mt-1 h-2 w-2 rounded-full bg-emerald-400"></span>
           <p>Score 0-5 con comparativas por rol y barra gradiente.</p>
@@ -106,7 +110,7 @@
     </div>
 
     <!-- Form card -->
-    <section class="form-card p-6 md:p-8 text-white">
+    <section class="form-card p-6 md:p-8 text-[var(--text)]">
       {% with msgs = get_flashed_messages() %}
         {% if msgs %}
           <div class="mb-4 space-y-2">
@@ -122,70 +126,70 @@
       <div class="mb-6 text-center">
         <img src="{{ url_for('static', filename='brand/mark.png') }}" class="mx-auto h-8 w-8 opacity-80" alt="Sharpix">
         <h2 class="mt-3 text-xl font-semibold">{{ 'Crear cuenta' if mode=='register' else 'Iniciar sesión' }}</h2>
-        <p class="text-sm text-slate-400">Completa tus datos para comenzar.</p>
+        <p class="text-sm text-[var(--muted)]">Completa tus datos para comenzar.</p>
       </div>
 
       <form method="post" class="space-y-4" onsubmit="this.querySelector('button[type=submit]').disabled=true;">
         <div class="grid gap-2 md:grid-cols-2">
-          <a href="{{ url_for('auth_steam') }}" class="flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-[#171a21] px-3 py-2 text-sm text-white hover:border-[#66c0f4]/60 hover:shadow-[0_6px_20px_rgba(102,192,244,0.25)] transition">
+          <a href="{{ url_for('auth_steam') }}" class="flex items-center justify-center gap-2 rounded-lg border border-[var(--border)] bg-[color-mix(in_srgb,var(--card)_90%,#171a21_10%)] px-3 py-2 text-sm text-[var(--text)] hover:border-[#66c0f4]/60 hover:shadow-[0_6px_20px_rgba(102,192,244,0.25)] transition">
             <img src="https://upload.wikimedia.org/wikipedia/commons/8/83/Steam_icon_logo.svg" alt="Steam" class="h-4 w-4">
             <span>Continuar con Steam</span>
           </a>
-          <a href="{{ url_for('auth_faceit') }}" class="flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-[#1f1f1f] px-3 py-2 text-sm text-white hover:border-[#ff5500]/60 hover:shadow-[0_6px_20px_rgba(255,85,0,0.28)] transition">
+          <a href="{{ url_for('auth_faceit') }}" class="flex items-center justify-center gap-2 rounded-lg border border-[var(--border)] bg-[color-mix(in_srgb,var(--card)_96%,#1f1f1f_4%)] px-3 py-2 text-sm text-[var(--text)] hover:border-[#ff5500]/60 hover:shadow-[0_6px_20px_rgba(255,85,0,0.28)] transition">
             <svg class="h-4 w-4" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M6 30.5L56 14l-16 36-10-14L6 30.5z" fill="#ff5500"/>
             </svg>
             <span>Continuar con FaceIt</span>
           </a>
         </div>
-        <div class="border-b border-white/10"></div>
+        <div class="border-b border-[var(--border)]"></div>
         {% if mode=='register' %}
           <div>
-            <label class="mb-1 block text-sm text-slate-300">Usuario</label>
-            <input name="username" required class="w-full rounded-lg bg-slate-900 px-3 py-2.5 text-slate-100 placeholder:text-slate-500 outline-none ring-1 ring-white/10 focus:ring-emerald-400/50" />
+            <label class="mb-1 block text-sm text-[var(--muted)]">Usuario</label>
+            <input name="username" required class="w-full rounded-lg bg-[color-mix(in_srgb,var(--card)_96%,#111827_4%)] px-3 py-2.5 text-[var(--text)] placeholder:text-[var(--muted)] outline-none ring-1 ring-[var(--border)] focus:ring-emerald-400/50" />
           </div>
           <div>
-            <label class="mb-1 block text-sm text-slate-300">Email</label>
-            <input type="email" name="email" required class="w-full rounded-lg bg-slate-900 px-3 py-2.5 text-slate-100 placeholder:text-slate-500 outline-none ring-1 ring-white/10 focus:ring-emerald-400/50" />
+            <label class="mb-1 block text-sm text-[var(--muted)]">Email</label>
+            <input type="email" name="email" required class="w-full rounded-lg bg-[color-mix(in_srgb,var(--card)_96%,#111827_4%)] px-3 py-2.5 text-[var(--text)] placeholder:text-[var(--muted)] outline-none ring-1 ring-[var(--border)] focus:ring-emerald-400/50" />
           </div>
           <div>
-            <label class="mb-1 block text-sm text-slate-300">Contraseña</label>
+            <label class="mb-1 block text-sm text-[var(--muted)]">Contraseña</label>
             <div class="relative">
-              <input id="pwd" type="password" name="password" required class="w-full rounded-lg bg-slate-900 px-3 py-2.5 pr-10 text-slate-100 placeholder:text-slate-500 outline-none ring-1 ring-white/10 focus:ring-emerald-400/50" />
-              <button type="button" class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200" onclick="togglePwd('pwd', this)">👁</button>
+              <input id="pwd" type="password" name="password" required class="w-full rounded-lg bg-[color-mix(in_srgb,var(--card)_96%,#111827_4%)] px-3 py-2.5 pr-10 text-[var(--text)] placeholder:text-[var(--muted)] outline-none ring-1 ring-[var(--border)] focus:ring-emerald-400/50" />
+              <button type="button" class="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--muted)] hover:text-slate-200" onclick="togglePwd('pwd', this)">👁</button>
             </div>
           </div>
         {% else %}
           <div>
-            <label class="mb-1 block text-sm text-slate-300">Usuario o email</label>
-            <input name="identifier" required class="w-full rounded-lg bg-slate-900 px-3 py-2.5 text-slate-100 placeholder:text-slate-500 outline-none ring-1 ring-white/10 focus:ring-emerald-400/50" />
+            <label class="mb-1 block text-sm text-[var(--muted)]">Usuario o email</label>
+            <input name="identifier" required class="w-full rounded-lg bg-[color-mix(in_srgb,var(--card)_96%,#111827_4%)] px-3 py-2.5 text-[var(--text)] placeholder:text-[var(--muted)] outline-none ring-1 ring-[var(--border)] focus:ring-emerald-400/50" />
           </div>
           <div>
-            <label class="mb-1 block text-sm text-slate-300">Contraseña</label>
+            <label class="mb-1 block text-sm text-[var(--muted)]">Contraseña</label>
             <div class="relative">
-              <input id="pwd" type="password" name="password" required class="w-full rounded-lg bg-slate-900 px-3 py-2.5 pr-10 text-slate-100 placeholder:text-slate-500 outline-none ring-1 ring-white/10 focus:ring-emerald-400/50" />
-              <button type="button" class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200" onclick="togglePwd('pwd', this)">👁</button>
+              <input id="pwd" type="password" name="password" required class="w-full rounded-lg bg-[color-mix(in_srgb,var(--card)_96%,#111827_4%)] px-3 py-2.5 pr-10 text-[var(--text)] placeholder:text-[var(--muted)] outline-none ring-1 ring-[var(--border)] focus:ring-emerald-400/50" />
+              <button type="button" class="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--muted)] hover:text-slate-200" onclick="togglePwd('pwd', this)">👁</button>
             </div>
           </div>
-          <label class="flex items-center gap-2 text-sm text-slate-300">
-            <input type="checkbox" name="remember" class="h-4 w-4 rounded border-slate-600 bg-slate-900" />
+          <label class="flex items-center gap-2 text-sm text-[var(--muted)]">
+            <input type="checkbox" name="remember" class="h-4 w-4 rounded border-slate-600 bg-[color-mix(in_srgb,var(--card)_96%,#111827_4%)]" />
             Recordarme
           </label>
         {% endif %}
 
-        <button type="submit" class="w-full rounded-xl bg-emerald-500 px-3 py-2.5 text-white shadow transition hover:-translate-y-0.5 hover:bg-emerald-400 disabled:opacity-60">
+        <button type="submit" class="w-full rounded-xl bg-emerald-500 px-3 py-2.5 text-[var(--text)] shadow transition hover:-translate-y-0.5 hover:bg-emerald-400 disabled:opacity-60">
           {{ 'Crear cuenta' if mode=='register' else 'Ingresar' }}
         </button>
       </form>
 
-      <div class="mt-4 text-center text-sm text-slate-300">
+      <div class="mt-4 text-center text-sm text-[var(--muted)]">
         {% if mode=='register' %}
           ¿Ya tenés cuenta? <a href="{{ url_for('login') }}" class="text-emerald-300 hover:text-emerald-200">Ingresar</a>
         {% else %}
           ¿No tenés cuenta? <a href="{{ url_for('register') }}" class="text-emerald-300 hover:text-emerald-200">Crear cuenta</a>
         {% endif %}
       </div>
-      <p class="mt-6 text-xs text-slate-500 text-center">Procesamiento en la nube segura - Datos cifrados.</p>
+      <p class="mt-6 text-xs text-[var(--muted)] text-center">Procesamiento en la nube segura - Datos cifrados.</p>
     </section>
   </div>
 </div>

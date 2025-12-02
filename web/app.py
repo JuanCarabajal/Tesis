@@ -1,5 +1,5 @@
 ﻿# -*- coding: utf-8 -*-
-from flask import Flask, render_template, request, redirect, url_for, flash, current_app
+from flask import Flask, render_template, request, redirect, url_for, flash, current_app, session
 import json, os, uuid, subprocess, sys, random
 from datetime import datetime
 import urllib.request, urllib.error
@@ -36,7 +36,7 @@ db = SQLAlchemy(app)
 # --- Login manager ---
 login_manager = LoginManager(app)
 login_manager.login_view = "login"
-login_manager.login_message = "Inicia sesion para continuar."
+login_manager.login_message = None  # evita flash intrusivo al redirigir a login
 
 # Flags simples para templates
 @app.context_processor
@@ -409,19 +409,33 @@ with app.app_context():
         db.create_all()
 
 # ---------------------- Helpers Novu ----------------------
-def trigger_novu_verification(user, code: str):
+def trigger_novu_verification(target, code: str):
+    """Envía código usando Novu. Acepta user o dict con email/username."""
     if not NOVU_SECRET_KEY:
         return False
+    email = getattr(target, "email", None) if target is not None else None
+    if not email and isinstance(target, dict):
+        email = target.get("email")
+    username = getattr(target, "username", None) if target is not None else None
+    if not username and isinstance(target, dict):
+        username = target.get("username")
+    subscriber_id = getattr(target, "id", None) if target is not None else None
+    if not subscriber_id and isinstance(target, dict):
+        subscriber_id = target.get("subscriber_id") or email
+
+    if not email:
+        return False
+
     payload = {
         "name": NOVU_WORKFLOW_ID,
         "to": {
-            "subscriberId": str(user.id),
-            "firstName": user.username,
+            "subscriberId": str(subscriber_id or email),
+            "firstName": username or "Jugador",
             "lastName": "",
-            "email": user.email,
+            "email": email,
         },
         "payload": {
-            "user": user.username,
+            "user": username or "Jugador",
             "code": int(code)
         }
     }
@@ -735,15 +749,20 @@ def register():
             flash("Usuario o email ya existen.")
             return redirect(request.url)
 
-        u = User(
-            username=username,
-            email=email,
-            pw_hash=generate_password_hash(password, method="pbkdf2:sha256", salt_length=16),
-            email_verified=False
-        )
-        db.session.add(u)
-        db.session.commit()
-        send_verification_email(u)
+        code = str(random.randint(100000, 999999))
+        session["pending_reg"] = {
+            "username": username,
+            "email": email,
+            "pw_hash": generate_password_hash(password, method="pbkdf2:sha256", salt_length=16),
+            "code": code,
+            "created_at": datetime.utcnow().isoformat()
+        }
+
+        sent = trigger_novu_verification({"email": email, "username": username}, code)
+        if sent:
+            flash(f"Te enviamos un codigo a {email}. Revisa tu bandeja.")
+        else:
+            flash(f"No se pudo enviar notificacion. Usa este codigo: {code}", "warning")
         return redirect(url_for("verify_email", email=email))
     return render_template("auth_login.html", mode="register")
 
@@ -770,11 +789,14 @@ def login():
 @app.route("/verify-email", methods=["GET", "POST"])
 def verify_email():
     email = (request.args.get("email") or request.form.get("email") or "").strip().lower()
+    pending = session.get("pending_reg") if isinstance(session.get("pending_reg"), dict) else {}
+    pending_match = pending.get("email") == email if pending else False
+
+    u = User.query.filter_by(email=email).first()
     if not email:
         flash("Ingresa tu email para verificar.")
         return redirect(url_for("login"))
-    u = User.query.filter_by(email=email).first()
-    if not u:
+    if not u and not pending_match:
         flash("Email no encontrado. Crea tu cuenta.")
         return redirect(url_for("register"))
     if request.method == "POST":
@@ -782,10 +804,24 @@ def verify_email():
         if not code:
             flash("Ingresa el codigo enviado.")
             return redirect(request.url)
-        if code == (u.email_code or ""):
-            u.email_verified = True
-            u.email_code = None
+        if u:
+            if code == (u.email_code or ""):
+                u.email_verified = True
+                u.email_code = None
+                db.session.commit()
+                login_user(u)
+                flash("Email verificado. Sesion iniciada.")
+                return redirect(url_for("home"))
+        elif pending_match and code == pending.get("code"):
+            u = User(
+                username=pending["username"],
+                email=pending["email"],
+                pw_hash=pending["pw_hash"],
+                email_verified=True
+            )
+            db.session.add(u)
             db.session.commit()
+            session.pop("pending_reg", None)
             login_user(u)
             flash("Email verificado. Sesion iniciada.")
             return redirect(url_for("home"))
@@ -797,7 +833,6 @@ def verify_email():
 @login_required
 def logout():
     logout_user()
-    flash("sesion cerrada.")
     return redirect(url_for("home"))
 
 # --------------------------- Auth SSO (stubs) ---------------------------

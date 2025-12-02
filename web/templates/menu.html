@@ -11,12 +11,11 @@
     <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
       <!-- Card accion -->
       <a href="{{ url_for('upload') }}"
-         class="group relative flex h-full flex-col overflow-hidden rounded-2xl bg-zinc-900/60 p-5 ring-1 ring-white/10 transition
-                hover:-translate-y-0.5 hover:ring-sky-400/30">
-        <div class="pointer-events-none absolute -top-12 right-0 h-28 w-28 rounded-full bg-sky-500/20 blur-2xl transition group-hover:opacity-90"></div>
-        <div class="text-lg font-medium text-zinc-100">Subir demo</div>
-        <p class="mt-1 text-sm text-zinc-400">Procesa una .dem y obtene el resumen completo.</p>
-        <div class="mt-auto inline-flex items-center gap-2 text-sky-400">
+         class="group relative flex h-full flex-col overflow-hidden rounded-2xl surface p-5 transition hover:-translate-y-0.5 hover:border-[color-mix(in_srgb,var(--accent-2)_35%,var(--border))]">
+        <div class="pointer-events-none absolute -top-12 right-0 h-28 w-28 rounded-full bg-[color-mix(in_srgb,var(--accent-2)_26%,transparent)] blur-2xl transition group-hover:opacity-90"></div>
+        <div class="text-lg font-medium text-[var(--text)]">Subir demo</div>
+        <p class="mt-1 text-sm text-[var(--muted)]">Procesa una .dem y obtene el resumen completo.</p>
+        <div class="mt-auto inline-flex items-center gap-2 text-[color-mix(in_srgb,var(--accent-2)_70%,var(--text))]">
           Comenzar
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
@@ -25,12 +24,11 @@
       </a>
 
       <a href="{{ url_for('upload') }}"
-         class="group relative flex h-full flex-col overflow-hidden rounded-2xl bg-zinc-900/60 p-5 ring-1 ring-white/10 transition
-                hover:-translate-y-0.5 hover:ring-violet-400/30">
-        <div class="pointer-events-none absolute -bottom-12 left-0 h-28 w-28 rounded-full bg-violet-500/20 blur-2xl"></div>
-        <div class="text-lg font-medium text-zinc-100">Continuar analisis</div>
-        <p class="mt-1 text-sm text-zinc-400">Subi otra demo para comparar desempeno y tendencias.</p>
-        <div class="mt-auto inline-flex items-center gap-2 text-violet-400 transition group-hover:translate-x-1">
+         class="group relative flex h-full flex-col overflow-hidden rounded-2xl surface p-5 transition hover:-translate-y-0.5 hover:border-[color-mix(in_srgb,var(--accent-2)_35%,var(--border))]">
+        <div class="pointer-events-none absolute -bottom-12 left-0 h-28 w-28 rounded-full bg-[color-mix(in_srgb,var(--accent-2)_22%,transparent)] blur-2xl"></div>
+        <div class="text-lg font-medium text-[var(--text)]">Continuar analisis</div>
+        <p class="mt-1 text-sm text-[var(--muted)]">Subi otra demo para comparar desempeno y tendencias.</p>
+        <div class="mt-auto inline-flex items-center gap-2 text-[color-mix(in_srgb,var(--accent-2)_65%,var(--text))] transition group-hover:translate-x-1">
           Seguir
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
@@ -39,12 +37,11 @@
       </a>
 
       <a href="{{ url_for('summary_root') }}"
-         class="group relative flex h-full flex-col overflow-hidden rounded-2xl bg-zinc-900/60 p-5 ring-1 ring-white/10 transition
-                hover:-translate-y-0.5 hover:ring-emerald-400/30">
-        <div class="pointer-events-none absolute -top-12 right-0 h-28 w-28 rounded-full bg-emerald-500/20 blur-2xl"></div>
-        <div class="text-lg font-medium text-zinc-100">Ver demo de ejemplo</div>
-        <p class="mt-1 text-sm text-zinc-400">Explora el Summary con datos simulados.</p>
-        <div class="mt-auto inline-flex items-center gap-2 text-emerald-400 transition group-hover:translate-x-1">
+         class="group relative flex h-full flex-col overflow-hidden rounded-2xl surface p-5 transition hover:-translate-y-0.5 hover:border-[color-mix(in_srgb,var(--accent)_35%,var(--border))]">
+        <div class="pointer-events-none absolute -top-12 right-0 h-28 w-28 rounded-full bg-[color-mix(in_srgb,var(--accent)_22%,transparent)] blur-2xl"></div>
+        <div class="text-lg font-medium text-[var(--text)]">Ver demo de ejemplo</div>
+        <p class="mt-1 text-sm text-[var(--muted)]">Explora el Summary con datos simulados.</p>
+        <div class="mt-auto inline-flex items-center gap-2 text-[color-mix(in_srgb,var(--accent)_70%,var(--text))] transition group-hover:translate-x-1">
           Abrir
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
@@ -53,12 +50,11 @@
       </a>
 
       <a href="{{ url_for('help_page') }}"
-         class="group relative flex h-full flex-col overflow-hidden rounded-2xl bg-zinc-900/60 p-5 ring-1 ring-white/10 transition
-                hover:-translate-y-0.5 hover:ring-amber-400/30">
-        <div class="pointer-events-none absolute -bottom-12 left-0 h-28 w-28 rounded-full bg-amber-500/20 blur-2xl"></div>
-        <div class="text-lg font-medium text-zinc-100">Ayuda & como funciona</div>
-        <p class="mt-1 text-sm text-zinc-400">Zonas Mirage, KPIs y Quick Wins.</p>
-        <div class="mt-auto inline-flex items-center gap-2 text-amber-400 transition group-hover:translate-x-1">
+         class="group relative flex h-full flex-col overflow-hidden rounded-2xl surface p-5 transition hover:-translate-y-0.5 hover:border-[color-mix(in_srgb,var(--accent-2)_25%,var(--border))]">
+        <div class="pointer-events-none absolute -bottom-12 left-0 h-28 w-28 rounded-full bg-[color-mix(in_srgb,var(--accent-2)_18%,transparent)] blur-2xl"></div>
+        <div class="text-lg font-medium text-[var(--text)]">Ayuda & como funciona</div>
+        <p class="mt-1 text-sm text-[var(--muted)]">Zonas Mirage, KPIs y Quick Wins.</p>
+        <div class="mt-auto inline-flex items-center gap-2 text-[color-mix(in_srgb,var(--accent-2)_65%,var(--text))] transition group-hover:translate-x-1">
           Leer
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
@@ -72,28 +68,28 @@
   <section class="mx-auto mt-10 max-w-7xl px-4">
     <div class="flex items-center justify-between">
       <div>
-        <div class="text-sm uppercase tracking-[0.2em] text-white/50">Recientes</div>
-        <h2 class="text-2xl font-semibold text-white">Tus ultimas demos</h2>
+        <div class="text-sm uppercase tracking-[0.2em] text-[var(--muted)]">Recientes</div>
+        <h2 class="text-2xl font-semibold text-[var(--text)]">Tus ultimas demos</h2>
       </div>
-      <a href="{{ url_for('upload') }}" class="text-sm text-sky-300 hover:text-sky-200">Subir otra demo ?</a>
+      <a href="{{ url_for('upload') }}" class="text-sm text-[color-mix(in_srgb,var(--accent-2)_75%,var(--text))] hover:text-[color-mix(in_srgb,var(--accent-2)_90%,var(--text))]">Subir otra demo ?</a>
     </div>
 
     {% if recent_matches and recent_matches|length %}
       <div class="mt-4 grid gap-3 md:grid-cols-2">
         {% for m in recent_matches %}
-          <div class="rounded-2xl border border-white/10 bg-white/5 p-4 flex items-center justify-between">
+          <div class="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-4 flex items-center justify-between shadow-sm">
             <div>
-              <p class="text-sm text-white/70">{{ m.map or 'Mirage' }} - {{ m.match_id }}</p>
-              <p class="text-xs text-white/50">{{ m.created_at.strftime('%Y-%m-%d') if m.created_at else '' }}</p>
+              <p class="text-sm text-[var(--text)]/80">{{ m.map or 'Mirage' }} - {{ m.match_id }}</p>
+              <p class="text-xs text-[var(--muted)]">{{ m.created_at.strftime('%Y-%m-%d') if m.created_at else '' }}</p>
             </div>
             <a href="{{ url_for('summary_with_id', match_id=m.match_id) }}"
-               class="text-sm text-emerald-300 hover:text-emerald-200">Ver</a>
+               class="text-sm text-[color-mix(in_srgb,var(--accent)_80%,var(--text))] hover:text-[color-mix(in_srgb,var(--accent)_95%,var(--text))]">Ver</a>
           </div>
         {% endfor %}
       </div>
     {% else %}
-      <div class="mt-4 rounded-2xl border border-dashed border-white/10 bg-white/5 p-6 text-sm text-white/60">
-        Aun no hay demos procesadas. <a href="{{ url_for('upload') }}" class="text-sky-300 hover:text-sky-200">Sube la primera</a>.
+      <div class="mt-4 rounded-2xl border border-dashed border-[var(--border)] bg-[var(--card)] p-6 text-sm text-[var(--muted)]">
+        Aun no hay demos procesadas. <a href="{{ url_for('upload') }}" class="text-[color-mix(in_srgb,var(--accent-2)_80%,var(--text))] hover:text-[color-mix(in_srgb,var(--accent-2)_95%,var(--text))]">Sube la primera</a>.
       </div>
     {% endif %}
   </section>
