@@ -13,15 +13,12 @@
     }
   </script>
   <script>
-    // Aplica tema antes del primer render para evitar flash
+    // Fuerza modo oscuro en cada arranque (landing) antes del primer render
     (function() {
       try {
-        const stored = localStorage.getItem("theme");
-        const prefersLight = window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches;
-        const theme = stored || (prefersLight ? "light" : "dark");
-        if (theme === "light") {
-          document.documentElement.classList.add("theme-light");
-        }
+        const theme = "dark";
+        document.documentElement.classList.remove("theme-light");
+        localStorage.setItem("theme", theme);
       } catch (e) {
         /* no-op */
       }
@@ -100,11 +97,12 @@
 
   <main class="mx-auto max-w-7xl p-6">
     <!-- Flash messages -->
-    {% with msgs = get_flashed_messages() %}
+    {% with msgs = get_flashed_messages(with_categories=true) %}
       {% if msgs %}
         <div class="mb-4 space-y-2">
-          {% for m in msgs %}
-            <div class="rounded-xl border border-emerald-400/25 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-100">
+          {% for cat, m in msgs %}
+            {% set tone = 'red' if cat in ['error', 'danger'] else ('amber' if cat in ['warning', 'warn'] else 'emerald') %}
+            <div class="rounded-xl border px-4 py-3 text-sm {{ 'border-' ~ tone ~ '-400/25' }} {{ 'bg-' ~ tone ~ '-500/10' }} {{ 'text-' ~ tone ~ '-100' }}">
               {{ m | safe }}
             </div>
           {% endfor %}
@@ -138,14 +136,16 @@
       const apply = (theme) => {
         if (theme === "light") {
           root.classList.add("theme-light");
-          if (label) label.textContent = "Claro";
-          if (iconSun) iconSun.classList.remove("hidden");
-          if (iconMoon) iconMoon.classList.add("hidden");
-        } else {
-          root.classList.remove("theme-light");
+          // Mostrar la opcion a cambiar a oscuro
           if (label) label.textContent = "Oscuro";
           if (iconSun) iconSun.classList.add("hidden");
           if (iconMoon) iconMoon.classList.remove("hidden");
+        } else {
+          root.classList.remove("theme-light");
+          // Mostrar la opcion a cambiar a claro
+          if (label) label.textContent = "Claro";
+          if (iconSun) iconSun.classList.remove("hidden");
+          if (iconMoon) iconMoon.classList.add("hidden");
         }
         try { localStorage.setItem("theme", theme); } catch (e) {}
       };

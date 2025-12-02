@@ -853,7 +853,7 @@ def upload():
     if request.method == "POST":
         demo = request.files.get("demo_file")
         if not demo or not demo.filename.lower().endswith(".dem"):
-            flash("Sube un archivo .dem valido.")
+            flash("Sube un archivo .dem valido.", "error")
             return redirect(request.url)
 
         match_id = "m_" + uuid.uuid4().hex[:8]
