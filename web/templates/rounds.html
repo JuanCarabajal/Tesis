@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+ï»¿{% extends "base.html" %}
 
 {% block content %}
   <style>
@@ -23,7 +23,7 @@
       </span>
     {% else %}
       <span class="rounded-full bg-sky-500/10 px-3 py-1 text-xs text-sky-300 ring-1 ring-sky-400/20">
-        Prototype – datos simulados
+        Prototype - datos simulados
       </span>
     {% endif %}
   </div>
@@ -67,21 +67,21 @@
                 {% elif side and side|upper == 'CT' %}
                   <span class="rounded-full bg-sky-500/10 px-2 py-0.5 text-xs text-sky-300 ring-1 ring-sky-400/30">CT</span>
                 {% else %}
-                  <span class="text-zinc-500 text-xs">—</span>
+                  <span class="text-zinc-500 text-xs">â€”</span>
                 {% endif %}
               </td>
               <td class="py-2 pr-4" data-label="Ganador">
                 {% if winner %}
                   <span class="rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs text-emerald-200 ring-1 ring-emerald-400/30">{{ winner }}</span>
                 {% else %}
-                  <span class="text-zinc-500 text-xs">—</span>
+                  <span class="text-zinc-500 text-xs">â€”</span>
                 {% endif %}
               </td>
               <td class="py-2 pr-4 text-zinc-300" data-label="Score">
                 {% if score_t is not none and score_ct is not none %}
                   {{ score_t }} - {{ score_ct }}
                 {% else %}
-                  —
+                  â€”
                 {% endif %}
               </td>
               <td class="py-2 pr-4" data-label="Plant">
@@ -93,10 +93,10 @@
                   <span class="text-zinc-500 text-xs">sin plant</span>
                 {% endif %}
               </td>
-              <td class="py-2 pr-4 text-zinc-200" data-label="Resultado">{{ result or '—' }}</td>
-              <td class="py-2 pr-4 text-zinc-200" data-label="Clutch">{{ clutch or '—' }}</td>
-              <td class="py-2 pr-4 text-zinc-200" data-label="Entry">{{ entry or '—' }}</td>
-              <td class="py-2 pr-4 text-zinc-300" data-label="Notas">{{ notes or '—' }}</td>
+              <td class="py-2 pr-4 text-zinc-200" data-label="Resultado">{{ result or 'â€”' }}</td>
+              <td class="py-2 pr-4 text-zinc-200" data-label="Clutch">{{ clutch or 'â€”' }}</td>
+              <td class="py-2 pr-4 text-zinc-200" data-label="Entry">{{ entry or 'â€”' }}</td>
+              <td class="py-2 pr-4 text-zinc-300" data-label="Notas">{{ notes or 'â€”' }}</td>
             </tr>
             {% endfor %}
           {% else %}
@@ -107,3 +107,4 @@
     </div>
   </div>
 {% endblock %}
+

@@ -1,7 +1,40 @@
 ﻿{% extends "base.html" %}
 {% set has_fb = fb is defined and fb %}
 {% block content %}
-<div class="mx-auto max-w-6xl px-5 py-8 space-y-8" x-data>
+<div id="summary-export" class="mx-auto max-w-6xl px-5 py-8 space-y-8" x-data>
+  <style>
+    /* Fallback para export a PDF: evita color-mix que html2canvas no soporta */
+    #summary-export.exporting-pdf {
+      background: #0b1224 !important;
+      color: #e5e7eb !important;
+    }
+    #summary-export.exporting-pdf *[class*="color-mix"],
+    #summary-export.exporting-pdf .surface,
+    #summary-export.exporting-pdf .surface * {
+      background: rgba(15,23,42,0.92) !important;
+      border-color: rgba(255,255,255,0.08) !important;
+      box-shadow: none !important;
+      color: #e5e7eb !important;
+      text-shadow: none !important;
+    }
+    #summary-export.exporting-pdf .text-[var(--muted)],
+    #summary-export.exporting-pdf .text-[var(--muted)] *,
+    #summary-export.exporting-pdf .text-[var(--text)],
+    #summary-export.exporting-pdf .text-[var(--text)] * {
+      color: #e5e7eb !important;
+      opacity: 1 !important;
+    }
+    #summary-export.exporting-pdf img {
+      filter: none !important;
+    }
+    #summary-export.exporting-pdf svg,
+    #summary-export.exporting-pdf svg * {
+      stroke: currentColor !important;
+      fill: currentColor !important;
+      color: #e5e7eb !important;
+      opacity: 1 !important;
+    }
+  </style>
 
   <!-- Header / Match basics -->
   <section id="summary-header"
@@ -62,9 +95,8 @@
            class="inline-flex items-center justify-center rounded-lg px-4 py-2 border border-[var(--border)] text-[var(--text)] hover:bg-[color-mix(in_srgb,var(--card)_90%,#fff_10%)] transition">
           Ver por ronda
         </a>
-        <button type="button"
-                class="inline-flex items-center justify-center rounded-lg px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white transition"
-                onclick="window.print()">
+        <button type="button" id="export-pdf-btn"
+                class="inline-flex items-center justify-center rounded-lg px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white transition">
           Exportar (PDF)
         </button>
       </div>
@@ -207,6 +239,65 @@
   </section>
 
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script>
+(function() {
+  const btn = document.getElementById("export-pdf-btn");
+  const target = document.getElementById("summary-export");
+  if (!btn || !target) return;
+
+  btn.addEventListener("click", async () => {
+    if (!(window.html2canvas && window.jspdf && window.jspdf.jsPDF)) {
+      alert("No se pudo cargar el exportador PDF.");
+      return;
+    }
+    btn.disabled = true;
+    const prevLabel = btn.textContent;
+    btn.textContent = "Generando PDF...";
+    target.classList.add("exporting-pdf");
+    try {
+      const canvas = await html2canvas(target, {
+        scale: 2,
+        useCORS: true,
+        scrollY: -window.scrollY,
+        backgroundColor: "#0b1224"
+      });
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new window.jspdf.jsPDF("p", "mm", "a4");
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+
+      // Escalar la imagen al ancho completo de la pagina y paginar si la altura supera A4.
+      const imgWidth = pageWidth;
+      const imgHeight = (canvas.height * pageWidth) / canvas.width;
+      let position = 0;
+      let heightLeft = imgHeight;
+
+      pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+
+      const filename = `sharpix-${document.getElementById("score")?.textContent || "summary"}.pdf`;
+      pdf.save(filename);
+    } catch (e) {
+      console.error("PDF export error", e);
+      alert("No se pudo exportar el PDF. Intenta nuevamente.");
+    } finally {
+      target.classList.remove("exporting-pdf");
+      btn.disabled = false;
+      btn.textContent = prevLabel;
+    }
+  });
+})();
+</script>
 
 <script>
 function updateRole(kpis) {

@@ -31,11 +31,55 @@
 <!-- Overlay -->
 <div id="overlay" class="fixed inset-0 z-50 hidden place-items-center bg-black/70 backdrop-blur-sm">
   <div class="w-[min(92vw,520px)] rounded-2xl bg-[color-mix(in_srgb,var(--card)_95%,#0f172a_5%)] p-6 ring-1 ring-[var(--border)]">
-    <div class="mb-2 text-sm text-[var(--muted)]">Analizando demo.</div>
+    <div class="mb-2 text-sm text-[var(--muted)]">Procesando demo. Esto puede tardar unos minutos.</div>
     <div class="mb-4 h-2 w-full overflow-hidden rounded-full bg-[var(--border)]">
       <div id="bar" class="h-full bg-violet-500 transition-all" style="width:0%"></div>
     </div>
-    <div id="step" class="text-sm text-[var(--text)]">Preparando.</div>
+    <div id="step" class="text-sm text-[var(--text)]">Preparando subida...</div>
   </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(() => {
+  const form = document.getElementById("uploadForm");
+  const overlay = document.getElementById("overlay");
+  const bar = document.getElementById("bar");
+  const stepEl = document.getElementById("step");
+  const btn = document.getElementById("analyzeBtn");
+  if (!form || !overlay || !bar || !stepEl) return;
+
+  form.addEventListener("submit", () => {
+    if (!form.checkValidity()) return;
+    overlay.classList.remove("hidden");
+    overlay.classList.add("grid");
+    if (btn) {
+      btn.disabled = true;
+      btn.classList.add("opacity-60", "cursor-not-allowed");
+    }
+
+    const totalMs = 5000 + Math.random() * 2000; // estimado del mock
+    const milestones = [
+      { limit: 20, text: "Subiendo demo..." },
+      { limit: 55, text: "Procesando demo... Esto puede tardar unos minutos." },
+      { limit: 85, text: "Generando feedback..." },
+      { limit: 95, text: "Listo. Abriendo resumen..." }
+    ];
+
+    const started = performance.now();
+    const tick = () => {
+      const elapsed = performance.now() - started;
+      const pct = Math.min(95, Math.round((elapsed / totalMs) * 95));
+      bar.style.width = pct + "%";
+      const next = milestones.find(m => pct <= m.limit) || milestones[milestones.length - 1];
+      stepEl.textContent = next.text;
+      if (pct >= 95) return;
+      requestAnimationFrame(tick);
+    };
+
+    tick();
+  });
+})();
+</script>
 {% endblock %}
